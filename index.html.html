@@ -4,302 +4,367 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Orangerie — Admin</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg:       #F0EDE5;
-  --panel:    #FAFAF8;
-  --ink:      #1C1814;
-  --ink-mid:  #4A433B;
-  --ink-lt:   #8A8078;
-  --gold:     #A8823C;
-  --gold-lt:  #C9A85C;
-  --border:   rgba(28,24,20,.12);
-  --green:    #2D6A4F;
-  --red:      #C0392B;
-  --sidebar:  #1C1814;
+  --bg:        #F7F5F1;
+  --surface:   #FFFFFF;
+  --border:    #E4E0D8;
+  --border-dk: #C8C2B8;
+  --ink:       #1C1814;
+  --ink-mid:   #5A5248;
+  --ink-lt:    #9A9088;
+  --gold:      #A8823C;
+  --gold-lt:   #C9A85C;
+  --gold-bg:   #FBF7F0;
+  --green:     #2D6A4F;
+  --green-bg:  #F0F7F4;
+  --red:       #C0392B;
+  --red-bg:    #FDF2F1;
+  --sidebar-w: 240px;
 }
 
-html, body { height: 100%; }
+html, body { height: 100%; font-size: 15px; }
 body {
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-family: 'Inter', system-ui, sans-serif;
   background: var(--bg);
   color: var(--ink);
   -webkit-font-smoothing: antialiased;
-  display: flex; flex-direction: column;
 }
 
-/* ── LAYOUT ── */
+/* ─── LAYOUT ─── */
 .app { display: flex; height: 100vh; overflow: hidden; }
 
 /* SIDEBAR */
 .sidebar {
-  width: 220px; flex-shrink: 0;
-  background: var(--sidebar);
+  width: var(--sidebar-w); flex-shrink: 0;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
   display: flex; flex-direction: column;
-  padding: 0;
 }
+
 .sidebar-logo {
-  padding: 24px 24px 20px;
-  border-bottom: 1px solid rgba(255,255,255,.08);
+  padding: 28px 24px 24px;
+  border-bottom: 1px solid var(--border);
 }
 .sidebar-logo-title {
   font-family: 'Cormorant Garamond', serif;
-  font-weight: 400; font-size: 17px;
-  letter-spacing: .05em; color: #F0EDE5;
+  font-weight: 400; font-size: 20px; letter-spacing: .04em;
+  color: var(--ink);
 }
 .sidebar-logo-sub {
-  font-size: 10px; letter-spacing: .2em; text-transform: uppercase;
-  color: rgba(240,237,229,.35); margin-top: 3px;
+  font-size: 11px; color: var(--ink-lt);
+  margin-top: 3px; letter-spacing: .04em;
 }
-.sidebar-nav { flex: 1; padding: 16px 0; }
-.sidebar-nav-item {
+
+.sidebar-nav { flex: 1; padding: 12px 0; overflow-y: auto; }
+
+.nav-section-label {
+  font-size: 10px; font-weight: 500; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--ink-lt);
+  padding: 16px 20px 6px;
+}
+
+.nav-item {
   display: flex; align-items: center; gap: 10px;
-  padding: 11px 24px;
-  font-size: 12px; letter-spacing: .12em; text-transform: uppercase;
-  color: rgba(240,237,229,.5);
-  cursor: pointer; transition: all .2s;
-  border-left: 2px solid transparent;
+  padding: 10px 20px; margin: 1px 8px;
+  font-size: 13.5px; color: var(--ink-mid);
+  cursor: pointer; border-radius: 6px;
+  transition: all .15s;
 }
-.sidebar-nav-item:hover { color: rgba(240,237,229,.9); background: rgba(255,255,255,.04); }
-.sidebar-nav-item.active { color: var(--gold-lt); border-color: var(--gold-lt); background: rgba(201,168,92,.08); }
-.sidebar-nav-item .icon { font-size: 14px; width: 18px; text-align: center; }
+.nav-item:hover { background: var(--bg); color: var(--ink); }
+.nav-item.active { background: var(--gold-bg); color: var(--gold); font-weight: 500; }
+.nav-item .nav-icon { font-size: 15px; width: 20px; text-align: center; opacity: .7; }
+.nav-item.active .nav-icon { opacity: 1; }
 
 .sidebar-footer {
   padding: 16px 24px;
-  border-top: 1px solid rgba(255,255,255,.08);
-  font-size: 11px; color: rgba(240,237,229,.3);
-  font-style: italic;
+  border-top: 1px solid var(--border);
+  font-size: 12px; color: var(--ink-lt);
 }
 
 /* MAIN */
-.main { flex: 1; overflow-y: auto; background: var(--bg); }
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--bg); }
 
+/* TOPBAR */
 .topbar {
-  position: sticky; top: 0; z-index: 50;
-  background: var(--panel);
+  background: var(--surface);
   border-bottom: 1px solid var(--border);
-  padding: 0 40px; height: 56px;
+  padding: 0 36px; height: 60px;
   display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
 }
-.topbar-title {
-  font-size: 14px; letter-spacing: .15em; text-transform: uppercase;
-  color: var(--ink-mid); font-weight: 400;
-}
-.topbar-actions { display: flex; gap: 12px; align-items: center; }
+.topbar-title { font-size: 16px; font-weight: 500; color: var(--ink); }
+.topbar-actions { display: flex; gap: 10px; }
+
+/* SCROLL AREA */
+.main-scroll { flex: 1; overflow-y: auto; padding: 32px 36px; }
 
 /* SCREENS */
-.screen { display: none; padding: 40px; }
+.screen { display: none; }
 .screen.active { display: block; }
 
-/* ── COMPONENTS ── */
+/* ─── COMPONENTS ─── */
+
+/* BUTTONS */
 .btn {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 11px; letter-spacing: .2em; text-transform: uppercase;
-  padding: 10px 22px; border: none; cursor: pointer;
-  transition: all .2s; display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px; font-weight: 500;
+  padding: 9px 18px; border: 1px solid transparent;
+  border-radius: 6px; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 6px;
+  transition: all .15s; white-space: nowrap;
 }
-.btn-primary { background: var(--ink); color: var(--bg); }
+.btn-primary { background: var(--ink); color: white; }
 .btn-primary:hover { background: #333; }
-.btn-gold { background: var(--gold); color: white; }
+.btn-gold { background: var(--gold); color: white; border-color: var(--gold); }
 .btn-gold:hover { background: var(--gold-lt); }
-.btn-outline {
-  background: transparent; color: var(--ink-mid);
-  border: 1px solid var(--border);
-}
-.btn-outline:hover { border-color: var(--ink); color: var(--ink); }
-.btn-danger { background: transparent; color: var(--red); border: 1px solid rgba(192,57,43,.3); }
-.btn-danger:hover { background: var(--red); color: white; }
-.btn-sm { padding: 7px 16px; font-size: 10px; }
 .btn-success { background: var(--green); color: white; }
 .btn-success:hover { background: #236b3f; }
+.btn-outline { background: white; color: var(--ink-mid); border-color: var(--border-dk); }
+.btn-outline:hover { border-color: var(--ink); color: var(--ink); }
+.btn-danger { background: var(--red-bg); color: var(--red); border-color: rgba(192,57,43,.25); }
+.btn-danger:hover { background: var(--red); color: white; }
+.btn-sm { padding: 6px 13px; font-size: 12px; }
+.btn-xs { padding: 4px 10px; font-size: 11px; border-radius: 4px; }
 
-/* STATS ROW */
+/* STATS */
 .stats-row {
-  display: grid; grid-template-columns: repeat(4, 1fr);
-  gap: 16px; margin-bottom: 40px;
+  display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 28px;
 }
 .stat-card {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  padding: 24px 28px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 20px 24px;
 }
 .stat-card-n {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 42px; font-weight: 300; font-style: italic;
+  font-size: 40px; font-weight: 300; font-style: italic;
   color: var(--ink); line-height: 1;
 }
 .stat-card-l {
-  font-size: 10px; letter-spacing: .2em; text-transform: uppercase;
-  color: var(--ink-lt); margin-top: 6px;
+  font-size: 12px; color: var(--ink-lt); margin-top: 5px; letter-spacing: .02em;
 }
 
-/* TABLE */
-.table-wrap {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  overflow: hidden;
+/* CARD / TABLE */
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; overflow: hidden; margin-bottom: 20px;
 }
-.table-header {
-  padding: 20px 28px;
+.card-header {
+  padding: 16px 24px;
   border-bottom: 1px solid var(--border);
   display: flex; align-items: center; justify-content: space-between;
 }
-.table-title {
-  font-size: 11px; letter-spacing: .22em; text-transform: uppercase;
-  color: var(--ink-lt);
-}
+.card-header-title { font-size: 13px; font-weight: 500; color: var(--ink-mid); }
+
 table { width: 100%; border-collapse: collapse; }
 thead th {
-  padding: 12px 20px;
-  font-size: 10px; letter-spacing: .2em; text-transform: uppercase;
-  color: var(--ink-lt); text-align: left;
+  padding: 11px 20px;
+  font-size: 11px; font-weight: 500; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--ink-lt);
+  text-align: left; background: var(--bg);
   border-bottom: 1px solid var(--border);
-  background: rgba(0,0,0,.02);
 }
-tbody tr { border-bottom: 1px solid var(--border); transition: background .15s; }
+tbody tr { border-bottom: 1px solid var(--border); transition: background .1s; }
 tbody tr:last-child { border-bottom: none; }
-tbody tr:hover { background: rgba(168,130,60,.04); }
-tbody td { padding: 14px 20px; font-size: 14px; color: var(--ink); vertical-align: middle; }
-.td-small { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-lt); }
+tbody tr:hover { background: var(--bg); }
+tbody td { padding: 13px 20px; font-size: 13.5px; color: var(--ink); vertical-align: middle; }
+.td-muted { font-size: 12px; color: var(--ink-lt); }
 
-/* STATUS BADGE */
+/* BADGES */
 .badge {
-  display: inline-block; font-size: 9px; letter-spacing: .18em;
-  text-transform: uppercase; padding: 4px 10px; border-radius: 0;
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 500; padding: 3px 9px;
+  border-radius: 20px;
 }
-.badge-published { background: rgba(45,106,79,.12); color: var(--green); }
-.badge-draft { background: rgba(138,128,120,.1); color: var(--ink-lt); }
+.badge::before { content:''; width:6px; height:6px; border-radius:50%; }
+.badge-pub { background: var(--green-bg); color: var(--green); }
+.badge-pub::before { background: var(--green); }
+.badge-draft { background: var(--bg); color: var(--ink-lt); border: 1px solid var(--border); }
+.badge-draft::before { background: var(--ink-lt); }
 
-/* FORM */
-.form-section {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  margin-bottom: 24px;
-}
-.form-section-header {
-  padding: 18px 28px;
-  border-bottom: 1px solid var(--border);
-  font-size: 10px; letter-spacing: .25em; text-transform: uppercase;
-  color: var(--ink-lt);
-}
-.form-body { padding: 28px; display: flex; flex-direction: column; gap: 20px; }
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-.form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+/* ─── ARTICLE FORM ─── */
+.form-grid { display: grid; grid-template-columns: 1fr 320px; gap: 20px; align-items: start; }
 
-.field { display: flex; flex-direction: column; gap: 7px; }
+.form-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; overflow: hidden; margin-bottom: 16px;
+}
+.form-card-title {
+  padding: 14px 20px; border-bottom: 1px solid var(--border);
+  font-size: 12px; font-weight: 500; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--ink-lt);
+  background: var(--bg);
+}
+.form-body { padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+.form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+
+.field { display: flex; flex-direction: column; gap: 5px; }
 .field label {
-  font-size: 10px; letter-spacing: .2em; text-transform: uppercase;
-  color: var(--ink-lt);
+  font-size: 12px; font-weight: 500; color: var(--ink-mid);
+  display: flex; align-items: center; gap: 6px;
 }
+.field label .req { color: var(--red); font-size: 14px; line-height: 1; }
 .field input, .field select, .field textarea {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 15px; color: var(--ink);
+  font-family: 'Inter', sans-serif;
+  font-size: 13.5px; color: var(--ink);
   background: var(--bg); border: 1px solid var(--border);
-  padding: 10px 14px; outline: none;
-  transition: border-color .2s;
+  border-radius: 6px; padding: 9px 13px;
+  outline: none; transition: border-color .15s, box-shadow .15s;
   width: 100%;
 }
 .field input:focus, .field select:focus, .field textarea:focus {
-  border-color: var(--gold);
+  border-color: var(--gold); box-shadow: 0 0 0 3px rgba(168,130,60,.1);
 }
-.field textarea { resize: vertical; min-height: 120px; line-height: 1.7; }
-.field textarea.tall { min-height: 280px; }
-.field-hint { font-size: 11px; font-style: italic; color: var(--ink-lt); margin-top: 2px; }
+.field textarea { resize: vertical; min-height: 100px; line-height: 1.65; }
+.field textarea.body-textarea { min-height: 260px; font-size: 13px; }
+.field-hint { font-size: 11.5px; color: var(--ink-lt); line-height: 1.5; }
 
-/* FACTS EDITOR */
-.facts-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
-.fact-row {
-  display: grid; grid-template-columns: 1fr 2fr auto;
-  gap: 8px; align-items: center;
-}
-.fact-row input {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 14px; color: var(--ink);
-  background: var(--bg); border: 1px solid var(--border);
-  padding: 8px 12px; outline: none;
-}
-.fact-row input:focus { border-color: var(--gold); }
-.fact-del {
-  width: 32px; height: 32px;
-  background: none; border: 1px solid var(--border);
-  color: var(--ink-lt); cursor: pointer;
-  font-size: 14px; display: flex; align-items: center; justify-content: center;
-  transition: all .2s;
-}
-.fact-del:hover { border-color: var(--red); color: var(--red); }
+/* ─── IMAGE UPLOAD ─── */
+.img-upload-wrap { display: flex; flex-direction: column; gap: 10px; }
 
-/* IMAGE UPLOAD */
-.img-upload-area {
-  border: 1px dashed rgba(168,130,60,.4);
-  padding: 32px;
-  text-align: center;
-  cursor: pointer;
-  transition: all .2s;
-  background: rgba(168,130,60,.02);
-  position: relative;
+.img-spec-box {
+  background: var(--gold-bg);
+  border: 1px solid rgba(168,130,60,.25);
+  border-radius: 6px; padding: 11px 14px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 6px 20px;
 }
-.img-upload-area:hover { border-color: var(--gold); background: rgba(168,130,60,.05); }
-.img-upload-area input[type="file"] {
+.img-spec-row {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 12px;
+}
+.img-spec-label { color: var(--ink-lt); }
+.img-spec-val { font-weight: 500; color: var(--ink); font-size: 12px; }
+.img-spec-note {
+  grid-column: 1/-1; font-size: 11.5px; color: var(--ink-lt);
+  margin-top: 4px; border-top: 1px solid rgba(168,130,60,.2); padding-top: 6px;
+}
+
+.img-dropzone {
+  border: 2px dashed var(--border-dk);
+  border-radius: 8px; padding: 28px 20px;
+  text-align: center; cursor: pointer;
+  transition: all .2s; position: relative;
+  background: var(--bg);
+}
+.img-dropzone:hover { border-color: var(--gold); background: var(--gold-bg); }
+.img-dropzone input[type="file"] {
   position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
 }
-.img-upload-label {
-  font-size: 11px; letter-spacing: .18em; text-transform: uppercase;
-  color: var(--ink-lt); display: block; margin-bottom: 6px;
-}
-.img-upload-hint { font-size: 12px; font-style: italic; color: var(--ink-lt); }
-.img-preview {
-  margin-top: 12px; width: 100%; max-height: 200px;
-  object-fit: cover; display: none;
-}
-.img-preview.visible { display: block; }
+.img-dropzone-icon { font-size: 28px; margin-bottom: 8px; opacity: .5; }
+.img-dropzone-label { font-size: 13px; font-weight: 500; color: var(--ink-mid); margin-bottom: 4px; }
+.img-dropzone-hint { font-size: 12px; color: var(--ink-lt); }
 
-/* TAGS INPUT */
-.tags-wrap { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
-.tag-chip {
-  font-size: 10px; letter-spacing: .15em; text-transform: uppercase;
-  color: var(--ink-mid); border: 1px solid var(--border);
-  padding: 5px 12px; display: flex; align-items: center; gap: 6px;
+.img-preview-wrap {
+  border-radius: 8px; overflow: hidden;
+  border: 1px solid var(--border); display: none; position: relative;
 }
-.tag-chip button {
-  background: none; border: none; cursor: pointer;
-  color: var(--ink-lt); font-size: 12px; line-height: 1;
-  padding: 0; transition: color .2s;
+.img-preview-wrap.visible { display: block; }
+.img-preview-wrap img { width: 100%; height: 180px; object-fit: cover; display: block; }
+.img-preview-remove {
+  position: absolute; top: 8px; right: 8px;
+  background: rgba(255,255,255,.9); border: 1px solid var(--border);
+  border-radius: 4px; padding: 4px 8px;
+  font-size: 11px; font-weight: 500; cursor: pointer; color: var(--red);
+  transition: all .15s;
 }
-.tag-chip button:hover { color: var(--red); }
-.tag-input-wrap { display: flex; gap: 8px; }
-.tag-input-wrap input {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 14px; color: var(--ink);
+.img-preview-remove:hover { background: var(--red); color: white; border-color: var(--red); }
+
+.img-size-warning {
+  display: none; background: var(--red-bg); border: 1px solid rgba(192,57,43,.25);
+  border-radius: 6px; padding: 9px 13px;
+  font-size: 12px; color: var(--red);
+}
+.img-size-warning.show { display: block; }
+
+/* ─── FACTS / TAGS ─── */
+.fact-row {
+  display: grid; grid-template-columns: 140px 1fr 32px; gap: 8px; align-items: center;
+}
+.fact-row input {
+  font-family: 'Inter', sans-serif; font-size: 13px; color: var(--ink);
   background: var(--bg); border: 1px solid var(--border);
-  padding: 8px 12px; outline: none; width: 160px;
+  border-radius: 6px; padding: 7px 11px; outline: none;
 }
-.tag-input-wrap input:focus { border-color: var(--gold); }
+.fact-row input:focus { border-color: var(--gold); }
+.fact-del-btn {
+  width: 32px; height: 32px; border: 1px solid var(--border);
+  border-radius: 6px; background: white; cursor: pointer;
+  color: var(--ink-lt); font-size: 16px; display: flex;
+  align-items: center; justify-content: center; transition: all .15s;
+}
+.fact-del-btn:hover { border-color: var(--red); color: var(--red); background: var(--red-bg); }
 
-/* CATEGORY CARDS */
-.cat-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+.tags-area { display: flex; flex-wrap: wrap; gap: 6px; min-height: 32px; }
+.tag-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 12px; color: var(--ink-mid);
+  background: var(--bg); border: 1px solid var(--border-dk);
+  border-radius: 20px; padding: 4px 10px 4px 12px;
+}
+.tag-chip-del {
+  background: none; border: none; cursor: pointer;
+  color: var(--ink-lt); font-size: 14px; line-height: 1;
+  padding: 0; display: flex; align-items: center;
+  transition: color .15s;
+}
+.tag-chip-del:hover { color: var(--red); }
+.tag-add-row { display: flex; gap: 8px; margin-top: 8px; }
+.tag-add-row input {
+  font-family: 'Inter', sans-serif; font-size: 13px; color: var(--ink);
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 6px; padding: 7px 11px; outline: none; width: 180px;
+}
+.tag-add-row input:focus { border-color: var(--gold); }
+
+/* ─── CATEGORIES ─── */
+.cat-cards { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
 .cat-card {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  padding: 24px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 20px;
 }
-.cat-card-name {
+.cat-card-name { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 400; color: var(--ink); margin-bottom: 6px; }
+.cat-card-desc { font-size: 13px; color: var(--ink-lt); line-height: 1.6; margin-bottom: 14px; font-style: italic; }
+
+/* ─── SUBSCRIBERS ─── */
+.sub-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.sub-stat-big {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 20px; font-weight: 400; color: var(--ink); margin-bottom: 8px;
+  font-size: 52px; font-weight: 300; font-style: italic; color: var(--ink); line-height: 1;
 }
-.cat-card-desc { font-size: 13px; font-style: italic; color: var(--ink-lt); line-height: 1.6; margin-bottom: 16px; }
+.sub-stat-label { font-size: 12px; color: var(--ink-lt); margin-top: 4px; }
+
+/* SEARCH */
+.search-row { display: flex; gap: 10px; margin-bottom: 16px; align-items: center; }
+.search-input {
+  font-family: 'Inter', sans-serif; font-size: 13.5px; color: var(--ink);
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 6px; padding: 9px 14px; outline: none;
+  flex: 1; max-width: 300px; transition: border-color .15s;
+}
+.search-input:focus { border-color: var(--gold); }
+.filter-sel {
+  font-family: 'Inter', sans-serif; font-size: 13px; color: var(--ink-mid);
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 6px; padding: 9px 12px; outline: none; cursor: pointer;
+}
+
+/* EMPTY / LOADING */
+.empty { text-align: center; padding: 64px 32px; color: var(--ink-lt); font-size: 14px; font-style: italic; }
+.loading-row { text-align: center; padding: 48px; font-size: 13px; color: var(--ink-lt); letter-spacing: .05em; }
 
 /* TOAST */
 .toast {
-  position: fixed; bottom: 32px; right: 32px; z-index: 9999;
-  background: var(--ink); color: var(--bg);
-  padding: 14px 24px;
-  font-size: 13px; letter-spacing: .05em;
-  transform: translateY(80px); opacity: 0;
-  transition: all .3s ease;
-  pointer-events: none;
+  position: fixed; bottom: 28px; right: 28px; z-index: 9999;
+  background: var(--ink); color: white;
+  padding: 12px 20px; border-radius: 8px;
+  font-size: 13.5px; font-weight: 500;
+  box-shadow: 0 4px 20px rgba(0,0,0,.15);
+  transform: translateY(60px); opacity: 0;
+  transition: all .25s ease; pointer-events: none;
 }
 .toast.show { transform: translateY(0); opacity: 1; }
 .toast.success { background: var(--green); }
@@ -307,53 +372,28 @@ tbody td { padding: 14px 20px; font-size: 14px; color: var(--ink); vertical-alig
 
 /* MODAL */
 .modal-overlay {
-  position: fixed; inset: 0; background: rgba(28,24,20,.6);
+  position: fixed; inset: 0; background: rgba(28,24,20,.45);
   z-index: 500; display: flex; align-items: center; justify-content: center;
-  opacity: 0; pointer-events: none; transition: opacity .25s;
+  opacity: 0; pointer-events: none; transition: opacity .2s;
 }
 .modal-overlay.open { opacity: 1; pointer-events: all; }
 .modal {
-  background: var(--panel); width: 480px; max-width: 90vw;
-  padding: 36px; position: relative;
+  background: var(--surface); border-radius: 12px;
+  width: 440px; max-width: 90vw; padding: 32px;
+  box-shadow: 0 8px 40px rgba(0,0,0,.12);
 }
-.modal h3 {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 24px; font-weight: 300; margin-bottom: 14px;
-}
-.modal p { font-size: 14px; font-style: italic; color: var(--ink-mid); line-height: 1.6; margin-bottom: 28px; }
-.modal-actions { display: flex; gap: 12px; justify-content: flex-end; }
+.modal h3 { font-size: 18px; font-weight: 500; color: var(--ink); margin-bottom: 10px; }
+.modal p { font-size: 14px; color: var(--ink-mid); line-height: 1.65; margin-bottom: 24px; }
+.modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
 
-/* EMPTY STATE */
-.empty-state {
-  text-align: center; padding: 80px 40px;
-  font-size: 15px; font-style: italic; color: var(--ink-lt);
+/* PUBLISH BAR */
+.publish-bar {
+  position: sticky; bottom: 0; left: 0; right: 0;
+  background: var(--surface); border-top: 1px solid var(--border);
+  padding: 14px 36px; display: flex; gap: 10px; align-items: center;
+  margin: 0 -36px -32px; z-index: 10;
 }
-
-/* LOADING */
-.loading {
-  text-align: center; padding: 60px;
-  font-size: 13px; letter-spacing: .15em; text-transform: uppercase;
-  color: var(--ink-lt);
-}
-
-/* SEARCH */
-.search-bar {
-  display: flex; gap: 12px; margin-bottom: 24px; align-items: center;
-}
-.search-input {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 15px; color: var(--ink);
-  background: var(--panel); border: 1px solid var(--border);
-  padding: 10px 16px; outline: none; flex: 1; max-width: 360px;
-  transition: border-color .2s;
-}
-.search-input:focus { border-color: var(--gold); }
-.filter-select {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 14px; color: var(--ink);
-  background: var(--panel); border: 1px solid var(--border);
-  padding: 10px 14px; outline: none; cursor: pointer;
-}
+.publish-bar-left { flex: 1; font-size: 13px; color: var(--ink-lt); font-style: italic; }
 </style>
 </head>
 <body>
@@ -367,371 +407,381 @@ tbody td { padding: 14px 20px; font-size: 14px; color: var(--ink); vertical-alig
       <div class="sidebar-logo-sub">Admin Panel</div>
     </div>
     <nav class="sidebar-nav">
-      <div class="sidebar-nav-item active" onclick="showScreen('dashboard')">
-        <span class="icon">◈</span> Dashboard
+      <div class="nav-section-label">Content</div>
+      <div class="nav-item active" onclick="nav(this,'dashboard')">
+        <span class="nav-icon">⊞</span> Dashboard
       </div>
-      <div class="sidebar-nav-item" onclick="showScreen('articles')">
-        <span class="icon">≡</span> Articles
+      <div class="nav-item" onclick="nav(this,'articles')">
+        <span class="nav-icon">≡</span> All Articles
       </div>
-      <div class="sidebar-nav-item" onclick="showScreen('new-article')">
-        <span class="icon">+</span> New Article
+      <div class="nav-item" onclick="nav(this,'new-article'); resetForm()">
+        <span class="nav-icon">＋</span> New Article
       </div>
-      <div class="sidebar-nav-item" onclick="showScreen('categories')">
-        <span class="icon">◉</span> Categories
+      <div class="nav-section-label">Settings</div>
+      <div class="nav-item" onclick="nav(this,'categories')">
+        <span class="nav-icon">◈</span> Categories
       </div>
-      <div class="sidebar-nav-item" onclick="showScreen('subscribers')">
-        <span class="icon">✉</span> Subscribers
+      <div class="nav-item" onclick="nav(this,'subscribers')">
+        <span class="nav-icon">✉</span> Subscribers
       </div>
     </nav>
-    <div class="sidebar-footer">
-      The Orangerie · mmxxvi
-    </div>
+    <div class="sidebar-footer">The Orangerie · mmxxvi</div>
   </aside>
 
   <!-- MAIN -->
   <main class="main">
-
-    <!-- TOPBAR -->
     <div class="topbar">
       <div class="topbar-title" id="topbar-title">Dashboard</div>
       <div class="topbar-actions" id="topbar-actions"></div>
     </div>
 
-    <!-- DASHBOARD -->
-    <div id="screen-dashboard" class="screen active">
-      <div class="stats-row">
-        <div class="stat-card">
-          <div class="stat-card-n" id="stat-total">—</div>
-          <div class="stat-card-l">Total Articles</div>
+    <div class="main-scroll">
+
+      <!-- ══ DASHBOARD ══ -->
+      <div id="screen-dashboard" class="screen active">
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-card-n" id="st-total">—</div>
+            <div class="stat-card-l">Total Articles</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-n" id="st-pub">—</div>
+            <div class="stat-card-l">Published</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-n" id="st-draft">—</div>
+            <div class="stat-card-l">Drafts</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-n" id="st-subs">—</div>
+            <div class="stat-card-l">Subscribers</div>
+          </div>
         </div>
-        <div class="stat-card">
-          <div class="stat-card-n" id="stat-published">—</div>
-          <div class="stat-card-l">Published</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-card-n" id="stat-drafts">—</div>
-          <div class="stat-card-l">Drafts</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-card-n" id="stat-cats">—</div>
-          <div class="stat-card-l">Categories</div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-header-title">Recent Articles</div>
+            <button class="btn btn-primary btn-sm" onclick="nav(document.querySelector('.nav-item:nth-child(4)'),'new-article'); resetForm()">+ New Article</button>
+          </div>
+          <table>
+            <thead><tr><th>Title</th><th>Section</th><th>Status</th><th>Date</th><th></th></tr></thead>
+            <tbody id="dash-tbody"><tr><td colspan="5" class="loading-row">Loading...</td></tr></tbody>
+          </table>
         </div>
       </div>
 
-      <div class="table-wrap">
-        <div class="table-header">
-          <div class="table-title">Recent Articles</div>
-          <button class="btn btn-primary btn-sm" onclick="showScreen('new-article')">+ New Article</button>
+      <!-- ══ ARTICLES ══ -->
+      <div id="screen-articles" class="screen">
+        <div class="search-row">
+          <input class="search-input" type="text" placeholder="Search articles..." id="art-search" oninput="filterArts()">
+          <select class="filter-sel" id="art-f-status" onchange="filterArts()">
+            <option value="">All Status</option>
+            <option value="true">Published</option>
+            <option value="false">Drafts</option>
+          </select>
+          <select class="filter-sel" id="art-f-sec" onchange="filterArts()">
+            <option value="">All Sections</option>
+          </select>
         </div>
-        <table>
-          <thead>
-            <tr>
-              <th>Title</th>
-              <th>Section</th>
-              <th>Status</th>
-              <th>Date</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="dash-table-body">
-            <tr><td colspan="5" class="loading">Loading...</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- ARTICLES LIST -->
-    <div id="screen-articles" class="screen">
-      <div class="search-bar">
-        <input class="search-input" type="text" placeholder="Search articles..." id="search-input" oninput="filterArticles()">
-        <select class="filter-select" id="filter-status" onchange="filterArticles()">
-          <option value="">All Status</option>
-          <option value="true">Published</option>
-          <option value="false">Drafts</option>
-        </select>
-        <select class="filter-select" id="filter-section" onchange="filterArticles()">
-          <option value="">All Sections</option>
-        </select>
-      </div>
-      <div class="table-wrap">
-        <div class="table-header">
-          <div class="table-title">All Articles</div>
-          <button class="btn btn-primary btn-sm" onclick="showScreen('new-article')">+ New Article</button>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-header-title">All Articles</div>
+            <button class="btn btn-primary btn-sm" onclick="nav(document.querySelector('.nav-item:nth-child(4)'),'new-article'); resetForm()">+ New Article</button>
+          </div>
+          <table>
+            <thead><tr><th>Title</th><th>Section</th><th>Status</th><th>Created</th><th>Actions</th></tr></thead>
+            <tbody id="arts-tbody"><tr><td colspan="5" class="loading-row">Loading...</td></tr></tbody>
+          </table>
         </div>
-        <table>
-          <thead>
-            <tr>
-              <th>Title</th>
-              <th>Section</th>
-              <th>Status</th>
-              <th>Created</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="articles-table-body">
-            <tr><td colspan="5" class="loading">Loading...</td></tr>
-          </tbody>
-        </table>
       </div>
-    </div>
 
-    <!-- NEW / EDIT ARTICLE -->
-    <div id="screen-new-article" class="screen">
+      <!-- ══ NEW / EDIT ARTICLE ══ -->
+      <div id="screen-new-article" class="screen">
+        <input type="hidden" id="edit-id">
 
-      <input type="hidden" id="edit-id">
+        <div class="form-grid">
 
-      <!-- Cover image -->
-      <div class="form-section">
-        <div class="form-section-header">Cover Image</div>
-        <div class="form-body">
-          <div class="form-row">
-            <div class="field">
-              <label>Upload Cover Photo</label>
-              <div class="img-upload-area" id="cover-upload-area">
-                <input type="file" accept="image/*" onchange="handleImageUpload(this,'cover')">
-                <span class="img-upload-label">Click or drag to upload</span>
-                <span class="img-upload-hint">JPG, PNG, WEBP — max 5MB</span>
-                <img id="cover-preview" class="img-preview" alt="">
+          <!-- LEFT COL -->
+          <div>
+            <!-- Core -->
+            <div class="form-card">
+              <div class="form-card-title">Article Details</div>
+              <div class="form-body">
+                <div class="field">
+                  <label>Title <span class="req">*</span></label>
+                  <input type="text" id="f-title" placeholder="Why Monaco Remains Irreplaceable" oninput="autoSlug()">
+                </div>
+                <div class="field">
+                  <label>Italic part of title</label>
+                  <input type="text" id="f-subtitle" placeholder="e.g. Irreplaceable">
+                  <div class="field-hint">This part renders in italic in the headline. Leave blank if none.</div>
+                </div>
+                <div class="form-row-2">
+                  <div class="field">
+                    <label>Section <span class="req">*</span></label>
+                    <select id="f-section"><option value="">Select...</option></select>
+                  </div>
+                  <div class="field">
+                    <label>Slug <span class="req">*</span></label>
+                    <input type="text" id="f-slug" placeholder="why-monaco-remains-irreplaceable">
+                    <div class="field-hint">Auto-generated. Used in URL.</div>
+                  </div>
+                </div>
+                <div class="field">
+                  <label>Deck paragraph</label>
+                  <textarea id="f-dek" rows="2" placeholder="A meditation on place, privilege, and permanence..."></textarea>
+                </div>
               </div>
-              <input type="hidden" id="cover-image-url">
             </div>
-            <div class="field">
-              <label>Upload Sidebar Photo</label>
-              <div class="img-upload-area">
-                <input type="file" accept="image/*" onchange="handleImageUpload(this,'sidebar')">
-                <span class="img-upload-label">Click or drag to upload</span>
-                <span class="img-upload-hint">Used in article sidebar</span>
-                <img id="sidebar-preview" class="img-preview" alt="">
+
+            <!-- Content -->
+            <div class="form-card">
+              <div class="form-card-title">Content</div>
+              <div class="form-body">
+                <div class="field">
+                  <label>Opening Lede</label>
+                  <textarea id="f-lede" rows="3" placeholder="Opening paragraph — sets the atmosphere..."></textarea>
+                </div>
+                <div class="field">
+                  <label>Body Text</label>
+                  <textarea id="f-body" class="body-textarea" placeholder="Full article text.
+
+## Section heading (use ## for headings)
+
+Paragraph text here...
+
+Another paragraph..."></textarea>
+                  <div class="field-hint">## for section headings · Blank line between paragraphs</div>
+                </div>
+                <div class="field">
+                  <label>Pull Quote</label>
+                  <textarea id="f-pullquote" rows="2" placeholder="The harbour at dusk. A life lived not loudly, but exquisitely."></textarea>
+                  <div class="field-hint">Displayed as a highlighted quote in the article sidebar.</div>
+                </div>
               </div>
-              <input type="hidden" id="sidebar-image-url">
             </div>
-          </div>
-          <div class="form-row">
-            <div class="field">
-              <label>Cover Emoji (if no photo)</label>
-              <input type="text" id="cover-emoji" placeholder="🌿" maxlength="4">
+
+            <!-- Sidebar facts -->
+            <div class="form-card">
+              <div class="form-card-title">Sidebar — Context & Stats</div>
+              <div class="form-body">
+                <div class="form-row-2">
+                  <div class="field">
+                    <label>Stat Number</label>
+                    <input type="text" id="f-stat-n" placeholder="2 km²">
+                  </div>
+                  <div class="field">
+                    <label>Stat Label</label>
+                    <input type="text" id="f-stat-l" placeholder="The principality's surface area">
+                  </div>
+                </div>
+                <div class="field">
+                  <label>Context Facts</label>
+                  <div id="facts-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:8px"></div>
+                  <button class="btn btn-outline btn-sm" onclick="addFact()" type="button">+ Add fact row</button>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      </div>
 
-      <!-- Core fields -->
-      <div class="form-section">
-        <div class="form-section-header">Article Details</div>
-        <div class="form-body">
-          <div class="field">
-            <label>Title *</label>
-            <input type="text" id="f-title" placeholder="Why Monaco Remains Irreplaceable" oninput="autoSlug()">
-          </div>
-          <div class="field">
-            <label>Subtitle / Italic part</label>
-            <input type="text" id="f-subtitle" placeholder="e.g. Irreplaceable — this becomes italic in the headline">
-            <div class="field-hint">Leave blank if the title has no italic part</div>
-          </div>
-          <div class="form-row">
-            <div class="field">
-              <label>Section *</label>
-              <select id="f-section">
-                <option value="">Select section...</option>
-              </select>
-            </div>
-            <div class="field">
-              <label>Slug *</label>
-              <input type="text" id="f-slug" placeholder="why-monaco-remains-irreplaceable">
-              <div class="field-hint">Auto-generated from title. URL: /article/slug</div>
-            </div>
-          </div>
-          <div class="field">
-            <label>Deck / Subtitle paragraph</label>
-            <textarea id="f-dek" rows="2" placeholder="A meditation on place, privilege, and permanence..."></textarea>
-          </div>
-        </div>
-      </div>
-
-      <!-- Body -->
-      <div class="form-section">
-        <div class="form-section-header">Content</div>
-        <div class="form-body">
-          <div class="field">
-            <label>Opening Lede</label>
-            <textarea id="f-lede" rows="3" placeholder="The first paragraph — sets the atmosphere..."></textarea>
-          </div>
-          <div class="field">
-            <label>Body Text</label>
-            <textarea id="f-body" class="tall" placeholder="Full article text. Use ## for section headings, >> for pull quotes.
-
-Example:
-## On the Matter of Scent
-
-Every place worth knowing has a scent...
-
->> The harbour at dusk. A life lived not loudly, but exquisitely."></textarea>
-            <div class="field-hint">## Heading · >> Pull quote (inline) · Plain paragraphs separated by blank lines</div>
-          </div>
-          <div class="field">
-            <label>Pull Quote (for sidebar highlight)</label>
-            <textarea id="f-pullquote" rows="2" placeholder="The harbour at dusk. Cashmere against cool marble..."></textarea>
-          </div>
-        </div>
-      </div>
-
-      <!-- Sidebar data -->
-      <div class="form-section">
-        <div class="form-section-header">Sidebar — Context & Stats</div>
-        <div class="form-body">
-          <div class="form-row">
-            <div class="field">
-              <label>Stat Number</label>
-              <input type="text" id="f-stat-n" placeholder="2 km²">
-            </div>
-            <div class="field">
-              <label>Stat Label</label>
-              <input type="text" id="f-stat-l" placeholder="The principality's surface area">
+            <!-- Tags -->
+            <div class="form-card">
+              <div class="form-card-title">Tags</div>
+              <div class="form-body">
+                <div class="field">
+                  <div class="tags-area" id="tags-area"></div>
+                  <div class="tag-add-row">
+                    <input type="text" id="tag-input" placeholder="Add a tag..." onkeydown="if(event.key==='Enter'){event.preventDefault();addTag()}">
+                    <button class="btn btn-outline btn-sm" onclick="addTag()" type="button">Add</button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div class="field">
-            <label>Context Facts</label>
-            <div class="facts-list" id="facts-list"></div>
-            <button class="btn btn-outline btn-sm" onclick="addFact()" type="button">+ Add Fact</button>
-          </div>
-        </div>
-      </div>
+          <!-- RIGHT COL -->
+          <div>
 
-      <!-- Tags -->
-      <div class="form-section">
-        <div class="form-section-header">Tags</div>
-        <div class="form-body">
-          <div class="field">
-            <label>Tags</label>
-            <div class="tags-wrap" id="tags-wrap"></div>
-            <div class="tag-input-wrap" style="margin-top:10px">
-              <input type="text" id="tag-input" placeholder="Add tag..." onkeydown="handleTagKey(event)">
-              <button class="btn btn-outline btn-sm" onclick="addTag()" type="button">Add</button>
+            <!-- Publish -->
+            <div class="form-card">
+              <div class="form-card-title">Publishing</div>
+              <div class="form-body">
+                <div class="field">
+                  <label>Status</label>
+                  <select id="f-published">
+                    <option value="false">Draft — not visible on site</option>
+                    <option value="true">Published — live</option>
+                  </select>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:8px">
+                  <button class="btn btn-success" onclick="saveArticle(true)" style="width:100%;justify-content:center">Publish Now</button>
+                  <button class="btn btn-outline" onclick="saveArticle(false)" style="width:100%;justify-content:center">Save as Draft</button>
+                  <button class="btn btn-outline" onclick="nav(document.querySelector('#screen-articles'),'articles')" style="width:100%;justify-content:center;color:var(--ink-lt)">Cancel</button>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      </div>
 
-      <!-- Publish -->
-      <div class="form-section">
-        <div class="form-section-header">Publishing</div>
-        <div class="form-body">
-          <div class="form-row">
-            <div class="field">
-              <label>Status</label>
-              <select id="f-published">
-                <option value="false">Draft — not visible on site</option>
-                <option value="true">Published — live on site</option>
-              </select>
+            <!-- Cover Image -->
+            <div class="form-card">
+              <div class="form-card-title">Cover Image</div>
+              <div class="form-body">
+                <div class="img-upload-wrap">
+                  <!-- Spec box -->
+                  <div class="img-spec-box">
+                    <div class="img-spec-row"><span class="img-spec-label">Recommended size</span><span class="img-spec-val">1200 × 900 px</span></div>
+                    <div class="img-spec-row"><span class="img-spec-label">Aspect ratio</span><span class="img-spec-val">4:3</span></div>
+                    <div class="img-spec-row"><span class="img-spec-label">Max file size</span><span class="img-spec-val">2 MB</span></div>
+                    <div class="img-spec-row"><span class="img-spec-label">Format</span><span class="img-spec-val">JPG, PNG, WEBP</span></div>
+                    <div class="img-spec-note">Appears on the homepage card and article header. Larger files slow the site down.</div>
+                  </div>
+                  <div id="cover-warning" class="img-size-warning" style="display:none"></div>
+                  <!-- Dropzone -->
+                  <div class="img-dropzone" id="cover-dz">
+                    <input type="file" accept="image/jpeg,image/png,image/webp" onchange="handleUpload(this,'cover')">
+                    <div class="img-dropzone-icon">🖼</div>
+                    <div class="img-dropzone-label">Click or drag to upload cover</div>
+                    <div class="img-dropzone-hint">JPG · PNG · WEBP · max 2 MB</div>
+                  </div>
+                  <div class="img-preview-wrap" id="cover-preview-wrap">
+                    <img id="cover-preview-img" src="" alt="">
+                    <div class="img-preview-remove" onclick="removeImg('cover')">Remove</div>
+                  </div>
+                  <input type="hidden" id="cover-image-url">
+                </div>
+              </div>
             </div>
+
+            <!-- Sidebar Image -->
+            <div class="form-card">
+              <div class="form-card-title">Sidebar Image</div>
+              <div class="form-body">
+                <div class="img-upload-wrap">
+                  <div class="img-spec-box">
+                    <div class="img-spec-row"><span class="img-spec-label">Recommended size</span><span class="img-spec-val">600 × 800 px</span></div>
+                    <div class="img-spec-row"><span class="img-spec-label">Aspect ratio</span><span class="img-spec-val">3:4 (portrait)</span></div>
+                    <div class="img-spec-row"><span class="img-spec-label">Max file size</span><span class="img-spec-val">1 MB</span></div>
+                    <div class="img-spec-row"><span class="img-spec-label">Format</span><span class="img-spec-val">JPG, PNG, WEBP</span></div>
+                    <div class="img-spec-note">Appears in the article right sidebar. Portrait format works best.</div>
+                  </div>
+                  <div id="sidebar-warning" class="img-size-warning" style="display:none"></div>
+                  <div class="img-dropzone">
+                    <input type="file" accept="image/jpeg,image/png,image/webp" onchange="handleUpload(this,'sidebar')">
+                    <div class="img-dropzone-icon">🖼</div>
+                    <div class="img-dropzone-label">Click or drag to upload sidebar photo</div>
+                    <div class="img-dropzone-hint">JPG · PNG · WEBP · max 1 MB</div>
+                  </div>
+                  <div class="img-preview-wrap" id="sidebar-preview-wrap">
+                    <img id="sidebar-preview-img" src="" alt="">
+                    <div class="img-preview-remove" onclick="removeImg('sidebar')">Remove</div>
+                  </div>
+                  <input type="hidden" id="sidebar-image-url">
+                </div>
+              </div>
+            </div>
+
+            <!-- Emoji fallback -->
+            <div class="form-card">
+              <div class="form-card-title">Emoji Fallback</div>
+              <div class="form-body">
+                <div class="field">
+                  <label>Cover Emoji</label>
+                  <input type="text" id="cover-emoji" placeholder="🌿" maxlength="4" style="font-size:24px;text-align:center;letter-spacing:.1em">
+                  <div class="field-hint">Used if no photo is uploaded. Pick one that matches the article mood.</div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /right col -->
+        </div><!-- /form-grid -->
+      </div><!-- /new-article -->
+
+      <!-- ══ CATEGORIES ══ -->
+      <div id="screen-categories" class="screen">
+        <div class="form-card" style="margin-bottom:24px">
+          <div class="form-card-title">Add New Category</div>
+          <div class="form-body">
+            <div class="form-row-2">
+              <div class="field">
+                <label>Name</label>
+                <input type="text" id="new-cat-name" placeholder="e.g. Food & Wine">
+              </div>
+              <div class="field">
+                <label>Description</label>
+                <input type="text" id="new-cat-desc" placeholder="Short description shown on category pages...">
+              </div>
+            </div>
+            <div><button class="btn btn-primary" onclick="addCategory()">Add Category</button></div>
           </div>
-          <div style="display:flex;gap:12px;padding-top:8px">
-            <button class="btn btn-primary" onclick="saveArticle(false)">Save Draft</button>
-            <button class="btn btn-success" onclick="saveArticle(true)">Publish</button>
-            <button class="btn btn-outline" onclick="showScreen('articles')">Cancel</button>
+        </div>
+        <div class="cat-cards" id="cat-cards">
+          <div class="loading-row" style="grid-column:1/-1">Loading...</div>
+        </div>
+      </div>
+
+      <!-- ══ SUBSCRIBERS ══ -->
+      <div id="screen-subscribers" class="screen">
+        <div class="sub-header">
+          <div>
+            <div class="sub-stat-big" id="sub-total">—</div>
+            <div class="sub-stat-label">Total Subscribers</div>
           </div>
+          <button class="btn btn-outline" onclick="exportCSV()">Export CSV</button>
+        </div>
+        <div class="search-row">
+          <input class="search-input" type="text" placeholder="Search email..." id="sub-search" oninput="filterSubs()">
+          <select class="filter-sel" id="sub-f-status" onchange="filterSubs()">
+            <option value="">All Status</option>
+            <option value="active">Active</option>
+            <option value="unsubscribed">Unsubscribed</option>
+          </select>
+        </div>
+        <div class="card">
+          <table>
+            <thead><tr><th>Email</th><th>Source</th><th>Status</th><th>Date</th><th></th></tr></thead>
+            <tbody id="sub-tbody"><tr><td colspan="5" class="loading-row">Loading...</td></tr></tbody>
+          </table>
         </div>
       </div>
 
-    </div><!-- /new-article -->
-
-    <!-- CATEGORIES -->
-    <div id="screen-categories" class="screen">
-      <div style="margin-bottom:32px;display:flex;gap:12px;align-items:flex-end">
-        <div class="field" style="flex:1;max-width:280px">
-          <label>Category Name</label>
-          <input type="text" id="new-cat-name" placeholder="e.g. Food & Wine">
-        </div>
-        <div class="field" style="flex:2">
-          <label>Description</label>
-          <input type="text" id="new-cat-desc" placeholder="Short description...">
-        </div>
-        <button class="btn btn-primary" onclick="addCategory()">Add Category</button>
-      </div>
-      <div class="cat-grid" id="cat-grid">
-        <div class="loading" style="grid-column:1/-1">Loading...</div>
-      </div>
-    </div>
-
-    <!-- SUBSCRIBERS -->
-    <div id="screen-subscribers" class="screen">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
-        <div>
-          <div style="font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-lt);margin-bottom:6px">Total</div>
-          <div style="font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:300;font-style:italic" id="sub-total">—</div>
-        </div>
-        <button class="btn btn-outline" onclick="exportCSV()">Export CSV</button>
-      </div>
-
-      <div class="table-wrap">
-        <div class="table-header">
-          <div class="table-title">Subscribers</div>
-          <input class="search-input" type="text" placeholder="Search email..." id="sub-search" oninput="filterSubs()" style="max-width:240px;font-size:13px;padding:8px 12px">
-        </div>
-        <table>
-          <thead>
-            <tr>
-              <th>Email</th>
-              <th>Source</th>
-              <th>Status</th>
-              <th>Date</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="sub-table-body">
-            <tr><td colspan="5" class="loading">Loading...</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
+    </div><!-- /main-scroll -->
   </main>
 </div>
 
 <!-- DELETE MODAL -->
-<div class="modal-overlay" id="delete-modal">
+<div class="modal-overlay" id="del-modal">
   <div class="modal">
     <h3>Delete Article</h3>
-    <p>This action cannot be undone. The article will be permanently removed from the journal.</p>
+    <p>This cannot be undone. The article will be permanently removed.</p>
     <div class="modal-actions">
       <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-danger" onclick="confirmDelete()">Delete</button>
+      <button class="btn btn-danger" onclick="confirmDelete()">Delete permanently</button>
     </div>
   </div>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <script>
-// ── SUPABASE CONFIG ──
-const SB_URL  = 'https://ucwgkduvpnklfggleupb.supabase.co';
-const SB_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVjd2drZHV2cG5rbGZnZ2xldXBiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2MDE1NzcsImV4cCI6MjA4NzE3NzU3N30.AKBjKoYp2xie6qd19crJVMIJDFzmXPTqU2BTtFHnypw';
-const BUCKET  = 'orangerie-images';
-const HEADERS = { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' };
+// ── CONFIG ──
+const SB_URL = 'https://ucwgkduvpnklfggleupb.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVjd2drZHV2cG5rbGZnZ2xldXBiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2MDE1NzcsImV4cCI6MjA4NzE3NzU3N30.AKBjKoYp2xie6qd19crJVMIJDFzmXPTqU2BTtFHnypw';
+const BUCKET = 'orangerie-images';
+const HDR    = { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' };
 
 // ── STATE ──
-let allArticles = [];
-let allCategories = [];
-let currentTags = [];
-let currentFacts = [];
-let deleteTargetId = null;
-let editingId = null;
+let allArticles = [], allCats = [], allSubs = [];
+let curTags = [], curFacts = [];
+let delId = null, editingId = null;
 
-// ── SUPABASE HELPERS ──
-async function sbFetch(path, opts={}) {
-  const res = await fetch(`${SB_URL}/rest/v1/${path}`, {
-    headers: HEADERS, ...opts
-  });
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(err);
-  }
+// IMAGE LIMITS (bytes)
+const IMG_LIMITS = { cover: 2 * 1024 * 1024, sidebar: 1 * 1024 * 1024 };
+
+// ── SUPABASE ──
+async function sb(path, opts={}) {
+  const res = await fetch(`${SB_URL}/rest/v1/${path}`, { headers: HDR, ...opts });
+  if (!res.ok) throw new Error(await res.text());
   return res.json().catch(() => null);
 }
 
-async function uploadImage(file, name) {
+async function uploadImg(file, name) {
   const ext  = file.name.split('.').pop();
   const path = `articles/${Date.now()}-${name}.${ext}`;
   const res  = await fetch(`${SB_URL}/storage/v1/object/${BUCKET}/${path}`, {
@@ -743,433 +793,344 @@ async function uploadImage(file, name) {
   return `${SB_URL}/storage/v1/object/public/${BUCKET}/${path}`;
 }
 
-// ── ROUTING ──
-function showScreen(id) {
+// ── NAV ──
+function nav(el, screen) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if (el && el.classList) el.classList.add('active');
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.sidebar-nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById(`screen-${id}`).classList.add('active');
-  document.querySelectorAll('.sidebar-nav-item').forEach(n => {
-    if (n.getAttribute('onclick')?.includes(id)) n.classList.add('active');
-  });
-  const titles = {
-    'dashboard': 'Dashboard',
-    'articles': 'All Articles',
-    'new-article': editingId ? 'Edit Article' : 'New Article',
-    'categories': 'Categories',
-    'subscribers': 'Subscribers'
-  };
-  document.getElementById('topbar-title').textContent = titles[id] || id;
-
-  const actions = document.getElementById('topbar-actions');
-  actions.innerHTML = '';
-  if (id === 'new-article' && editingId) {
-    const btn = document.createElement('button');
-    btn.className = 'btn btn-outline btn-sm';
-    btn.textContent = '← Back to Articles';
-    btn.onclick = () => showScreen('articles');
-    actions.appendChild(btn);
-  }
-
-  if (id === 'dashboard') loadDashboard();
-  if (id === 'articles') loadArticles();
-  if (id === 'categories') loadCategories();
-  if (id === 'subscribers') loadSubscribers();
-  if (id === 'new-article' && !editingId) resetForm();
+  document.getElementById(`screen-${screen}`).classList.add('active');
+  const titles = { dashboard:'Dashboard', articles:'All Articles', 'new-article': editingId ? 'Edit Article' : 'New Article', categories:'Categories', subscribers:'Subscribers' };
+  document.getElementById('topbar-title').textContent = titles[screen] || screen;
+  if (screen === 'dashboard')   loadDash();
+  if (screen === 'articles')    loadArts();
+  if (screen === 'categories')  loadCats();
+  if (screen === 'subscribers') loadSubs();
 }
 
 // ── DASHBOARD ──
-async function loadDashboard() {
+async function loadDash() {
   try {
-    const articles = await sbFetch('orangerie_articles?select=id,published,section,title,created_at&order=created_at.desc');
-    const cats     = await sbFetch('orangerie_categories?select=id');
+    const [arts, subs] = await Promise.all([
+      sb('orangerie_articles?select=id,title,section,published,created_at&order=created_at.desc'),
+      sb('orangerie_subscribers?select=id')
+    ]);
+    allArticles = arts;
+    document.getElementById('st-total').textContent = arts.length;
+    document.getElementById('st-pub').textContent   = arts.filter(a=>a.published).length;
+    document.getElementById('st-draft').textContent = arts.filter(a=>!a.published).length;
+    document.getElementById('st-subs').textContent  = subs.length;
 
-    const total     = articles.length;
-    const published = articles.filter(a => a.published).length;
-    const drafts    = total - published;
-
-    document.getElementById('stat-total').textContent     = total;
-    document.getElementById('stat-published').textContent = published;
-    document.getElementById('stat-drafts').textContent    = drafts;
-    document.getElementById('stat-cats').textContent      = cats.length;
-
-    const tbody = document.getElementById('dash-table-body');
-    if (!articles.length) {
-      tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No articles yet. Create your first one.</td></tr>';
-      return;
-    }
-    tbody.innerHTML = articles.slice(0,8).map(a => `
+    const tbody = document.getElementById('dash-tbody');
+    if (!arts.length) { tbody.innerHTML = '<tr><td colspan="5" class="empty">No articles yet.</td></tr>'; return; }
+    tbody.innerHTML = arts.slice(0,8).map(a => `
       <tr>
         <td><strong>${a.title}</strong></td>
-        <td class="td-small">${a.section}</td>
-        <td><span class="badge ${a.published ? 'badge-published' : 'badge-draft'}">${a.published ? 'Published' : 'Draft'}</span></td>
-        <td class="td-small">${fmtDate(a.created_at)}</td>
-        <td><button class="btn btn-outline btn-sm" onclick="editArticle('${a.id}')">Edit</button></td>
+        <td class="td-muted">${a.section}</td>
+        <td><span class="badge ${a.published?'badge-pub':'badge-draft'}">${a.published?'Published':'Draft'}</span></td>
+        <td class="td-muted">${fmtDate(a.created_at)}</td>
+        <td><button class="btn btn-outline btn-xs" onclick="editArt('${a.id}')">Edit</button></td>
       </tr>`).join('');
-  } catch(e) { showToast('Error loading dashboard: ' + e.message, 'error'); }
+  } catch(e) { toast('Dashboard error: '+e.message,'error'); }
 }
 
-// ── ARTICLES LIST ──
-async function loadArticles() {
+// ── ARTICLES ──
+async function loadArts() {
   try {
-    allArticles = await sbFetch('orangerie_articles?select=*&order=created_at.desc');
-    renderArticlesTable(allArticles);
+    allArticles = await sb('orangerie_articles?select=*&order=created_at.desc');
+    renderArts(allArticles);
     populateSectionFilter();
   } catch(e) {
-    document.getElementById('articles-table-body').innerHTML =
-      `<tr><td colspan="5" style="padding:20px;color:var(--red);font-style:italic">${e.message}</td></tr>`;
+    document.getElementById('arts-tbody').innerHTML = `<tr><td colspan="5" style="padding:20px;color:var(--red)">${e.message}</td></tr>`;
   }
 }
 
-function renderArticlesTable(articles) {
-  const tbody = document.getElementById('articles-table-body');
-  if (!articles.length) {
-    tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No articles found.</td></tr>';
-    return;
-  }
-  tbody.innerHTML = articles.map(a => `
+function renderArts(list) {
+  const tbody = document.getElementById('arts-tbody');
+  if (!list.length) { tbody.innerHTML = '<tr><td colspan="5" class="empty">No articles found.</td></tr>'; return; }
+  tbody.innerHTML = list.map(a => `
     <tr>
-      <td><strong>${a.title}</strong>${a.subtitle ? `<em style="color:var(--ink-lt);font-size:13px"> — ${a.subtitle}</em>` : ''}</td>
-      <td class="td-small">${a.section}</td>
-      <td><span class="badge ${a.published ? 'badge-published' : 'badge-draft'}">${a.published ? 'Published' : 'Draft'}</span></td>
-      <td class="td-small">${fmtDate(a.created_at)}</td>
-      <td style="display:flex;gap:8px">
-        <button class="btn btn-outline btn-sm" onclick="editArticle('${a.id}')">Edit</button>
-        <button class="btn btn-danger btn-sm" onclick="openDeleteModal('${a.id}')">Delete</button>
+      <td><strong>${a.title}</strong></td>
+      <td class="td-muted">${a.section}</td>
+      <td><span class="badge ${a.published?'badge-pub':'badge-draft'}">${a.published?'Published':'Draft'}</span></td>
+      <td class="td-muted">${fmtDate(a.created_at)}</td>
+      <td style="display:flex;gap:6px">
+        <button class="btn btn-outline btn-xs" onclick="editArt('${a.id}')">Edit</button>
+        <button class="btn btn-danger btn-xs" onclick="openDel('${a.id}')">Delete</button>
       </td>
     </tr>`).join('');
 }
 
-function filterArticles() {
-  const q       = document.getElementById('search-input').value.toLowerCase();
-  const status  = document.getElementById('filter-status').value;
-  const section = document.getElementById('filter-section').value;
-  const filtered = allArticles.filter(a => {
-    const matchQ = !q || a.title.toLowerCase().includes(q) || a.section.toLowerCase().includes(q);
-    const matchS = !status || String(a.published) === status;
-    const matchC = !section || a.section === section;
-    return matchQ && matchS && matchC;
-  });
-  renderArticlesTable(filtered);
+function filterArts() {
+  const q  = document.getElementById('art-search').value.toLowerCase();
+  const st = document.getElementById('art-f-status').value;
+  const sc = document.getElementById('art-f-sec').value;
+  renderArts(allArticles.filter(a =>
+    (!q  || a.title.toLowerCase().includes(q)) &&
+    (!st || String(a.published) === st) &&
+    (!sc || a.section === sc)
+  ));
 }
 
 function populateSectionFilter() {
-  const secs = [...new Set(allArticles.map(a => a.section))];
-  const sel  = document.getElementById('filter-section');
-  sel.innerHTML = '<option value="">All Sections</option>' +
-    secs.map(s => `<option value="${s}">${s}</option>`).join('');
+  const secs = [...new Set(allArticles.map(a=>a.section))];
+  document.getElementById('art-f-sec').innerHTML =
+    '<option value="">All Sections</option>' + secs.map(s=>`<option value="${s}">${s}</option>`).join('');
 }
 
-// ── NEW / EDIT FORM ──
-function resetForm() {
-  editingId = null;
-  document.getElementById('edit-id').value = '';
-  ['f-title','f-subtitle','f-slug','f-dek','f-lede','f-body','f-pullquote','f-stat-n','f-stat-l','cover-emoji'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = '';
-  });
-  document.getElementById('cover-emoji').value = '📰';
-  document.getElementById('f-published').value = 'false';
-  document.getElementById('cover-image-url').value = '';
-  document.getElementById('sidebar-image-url').value = '';
-  document.getElementById('cover-preview').className = 'img-preview';
-  document.getElementById('sidebar-preview').className = 'img-preview';
-  currentTags = [];
-  currentFacts = [];
-  renderTags();
-  renderFacts();
-}
-
-async function editArticle(id) {
+// ── EDIT ARTICLE ──
+async function editArt(id) {
   editingId = id;
-  showScreen('new-article');
+  nav(null,'new-article');
+  document.getElementById('topbar-title').textContent = 'Edit Article';
   try {
-    const [a] = await sbFetch(`orangerie_articles?id=eq.${id}&select=*`);
+    const [a] = await sb(`orangerie_articles?id=eq.${id}&select=*`);
     if (!a) return;
-    document.getElementById('edit-id').value       = a.id;
-    document.getElementById('f-title').value       = a.title || '';
-    document.getElementById('f-subtitle').value    = a.subtitle || '';
-    document.getElementById('f-slug').value        = a.slug || '';
-    document.getElementById('f-dek').value         = a.subtitle || '';
-    document.getElementById('f-lede').value        = a.lede || '';
-    document.getElementById('f-body').value        = a.body || '';
-    document.getElementById('f-pullquote').value   = a.pull_quote || '';
-    document.getElementById('f-stat-n').value      = a.stat_number || '';
-    document.getElementById('f-stat-l').value      = a.stat_label || '';
-    document.getElementById('cover-emoji').value   = a.cover_emoji || '📰';
-    document.getElementById('f-published').value   = String(a.published);
-    document.getElementById('cover-image-url').value   = a.cover_image_url || '';
-    document.getElementById('sidebar-image-url').value = a.sidebar_image_url || '';
-
+    document.getElementById('edit-id').value      = a.id;
+    document.getElementById('f-title').value      = a.title||'';
+    document.getElementById('f-subtitle').value   = a.subtitle||'';
+    document.getElementById('f-slug').value       = a.slug||'';
+    document.getElementById('f-dek').value        = a.subtitle||'';
+    document.getElementById('f-lede').value       = a.lede||'';
+    document.getElementById('f-body').value       = a.body||'';
+    document.getElementById('f-pullquote').value  = a.pull_quote||'';
+    document.getElementById('f-stat-n').value     = a.stat_number||'';
+    document.getElementById('f-stat-l').value     = a.stat_label||'';
+    document.getElementById('cover-emoji').value  = a.cover_emoji||'📰';
+    document.getElementById('f-published').value  = String(a.published);
+    document.getElementById('cover-image-url').value   = a.cover_image_url||'';
+    document.getElementById('sidebar-image-url').value = a.sidebar_image_url||'';
     if (a.cover_image_url) {
-      const img = document.getElementById('cover-preview');
-      img.src = a.cover_image_url; img.className = 'img-preview visible';
+      document.getElementById('cover-preview-img').src = a.cover_image_url;
+      document.getElementById('cover-preview-wrap').classList.add('visible');
     }
     if (a.sidebar_image_url) {
-      const img = document.getElementById('sidebar-preview');
-      img.src = a.sidebar_image_url; img.className = 'img-preview visible';
+      document.getElementById('sidebar-preview-img').src = a.sidebar_image_url;
+      document.getElementById('sidebar-preview-wrap').classList.add('visible');
     }
-
-    await populateSectionSelect(a.section);
-    currentTags  = a.tags || [];
-    currentFacts = a.facts || [];
-    renderTags();
-    renderFacts();
-    document.getElementById('topbar-title').textContent = 'Edit Article';
-  } catch(e) { showToast('Error loading article: ' + e.message, 'error'); }
+    await populateSecSelect(a.section);
+    curTags  = a.tags||[];
+    curFacts = a.facts||[];
+    renderTags(); renderFacts();
+  } catch(e) { toast('Error loading article: '+e.message,'error'); }
 }
 
+// ── SAVE ARTICLE ──
 async function saveArticle(publish) {
   const title = document.getElementById('f-title').value.trim();
   const slug  = document.getElementById('f-slug').value.trim();
   const sec   = document.getElementById('f-section').value;
-
-  if (!title || !slug || !sec) {
-    showToast('Title, slug and section are required.', 'error'); return;
-  }
+  if (!title || !slug || !sec) { toast('Title, slug and section required.','error'); return; }
 
   const payload = {
-    title,
-    subtitle:        document.getElementById('f-subtitle').value.trim() || null,
-    section:         sec,
-    slug,
-    lede:            document.getElementById('f-lede').value.trim() || null,
-    body:            document.getElementById('f-body').value.trim() || null,
-    pull_quote:      document.getElementById('f-pullquote').value.trim() || null,
-    cover_emoji:     document.getElementById('cover-emoji').value.trim() || '📰',
-    cover_image_url: document.getElementById('cover-image-url').value || null,
-    sidebar_image_url: document.getElementById('sidebar-image-url').value || null,
-    stat_number:     document.getElementById('f-stat-n').value.trim() || null,
-    stat_label:      document.getElementById('f-stat-l').value.trim() || null,
-    facts:           currentFacts,
-    tags:            currentTags,
-    published:       publish !== undefined ? publish : document.getElementById('f-published').value === 'true'
+    title, section: sec, slug,
+    subtitle:          document.getElementById('f-subtitle').value.trim()||null,
+    lede:              document.getElementById('f-lede').value.trim()||null,
+    body:              document.getElementById('f-body').value.trim()||null,
+    pull_quote:        document.getElementById('f-pullquote').value.trim()||null,
+    cover_emoji:       document.getElementById('cover-emoji').value.trim()||'📰',
+    cover_image_url:   document.getElementById('cover-image-url').value||null,
+    sidebar_image_url: document.getElementById('sidebar-image-url').value||null,
+    stat_number:       document.getElementById('f-stat-n').value.trim()||null,
+    stat_label:        document.getElementById('f-stat-l').value.trim()||null,
+    facts:  curFacts,
+    tags:   curTags,
+    published: publish !== undefined ? publish : document.getElementById('f-published').value === 'true'
   };
 
   try {
     const id = document.getElementById('edit-id').value;
     if (id) {
-      await sbFetch(`orangerie_articles?id=eq.${id}`, {
-        method: 'PATCH', body: JSON.stringify(payload)
-      });
-      showToast('Article updated.', 'success');
+      await sb(`orangerie_articles?id=eq.${id}`, { method:'PATCH', body:JSON.stringify(payload) });
+      toast('Article updated.','success');
     } else {
-      await sbFetch('orangerie_articles', {
-        method: 'POST', body: JSON.stringify(payload)
-      });
-      showToast(publish ? 'Article published!' : 'Draft saved.', 'success');
+      await sb('orangerie_articles', { method:'POST', body:JSON.stringify(payload) });
+      toast(publish ? 'Published!' : 'Draft saved.', 'success');
       resetForm();
     }
-    setTimeout(() => showScreen('articles'), 900);
-  } catch(e) { showToast('Save failed: ' + e.message, 'error'); }
+    setTimeout(() => nav(document.querySelectorAll('.nav-item')[1],'articles'), 900);
+  } catch(e) { toast('Save failed: '+e.message,'error'); }
+}
+
+// ── RESET FORM ──
+function resetForm() {
+  editingId = null;
+  ['edit-id','f-title','f-subtitle','f-slug','f-dek','f-lede','f-body','f-pullquote','f-stat-n','f-stat-l'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value='';
+  });
+  document.getElementById('cover-emoji').value   = '📰';
+  document.getElementById('f-published').value   = 'false';
+  document.getElementById('cover-image-url').value   = '';
+  document.getElementById('sidebar-image-url').value = '';
+  document.getElementById('cover-preview-wrap').classList.remove('visible');
+  document.getElementById('sidebar-preview-wrap').classList.remove('visible');
+  curTags=[]; curFacts=[];
+  renderTags(); renderFacts();
+  populateSecSelect();
 }
 
 // ── IMAGE UPLOAD ──
-async function handleImageUpload(input, type) {
+async function handleUpload(input, type) {
   const file = input.files[0]; if (!file) return;
-  showToast('Uploading...', '');
+  toast('Uploading...','');
   try {
-    const url = await uploadImage(file, type);
+    const url = await uploadImg(file, type);
     document.getElementById(`${type}-image-url`).value = url;
-    const preview = document.getElementById(`${type}-preview`);
-    preview.src = url; preview.className = 'img-preview visible';
-    showToast('Image uploaded.', 'success');
-  } catch(e) { showToast('Upload failed: ' + e.message, 'error'); }
+    document.getElementById(`${type}-preview-img`).src = url;
+    document.getElementById(`${type}-preview-wrap`).classList.add('visible');
+    toast('Image uploaded.','success');
+  } catch(e) { toast('Upload failed: '+e.message,'error'); }
+}
+
+function removeImg(type) {
+  document.getElementById(`${type}-image-url`).value = '';
+  document.getElementById(`${type}-preview-img`).src = '';
+  document.getElementById(`${type}-preview-wrap`).classList.remove('visible');
 }
 
 // ── SLUG ──
 function autoSlug() {
-  const el = document.getElementById('edit-id');
-  if (el.value) return; // don't overwrite on edit
-  const title = document.getElementById('f-title').value;
-  document.getElementById('f-slug').value = title
-    .toLowerCase().replace(/[^a-z0-9\s-]/g,'')
-    .trim().replace(/\s+/g,'-').substring(0,80);
+  if (document.getElementById('edit-id').value) return;
+  const t = document.getElementById('f-title').value;
+  document.getElementById('f-slug').value = t.toLowerCase()
+    .replace(/[^a-z0-9\s-]/g,'').trim().replace(/\s+/g,'-').substring(0,80);
 }
 
 // ── SECTION SELECT ──
-async function populateSectionSelect(selected='') {
-  if (!allCategories.length) {
-    allCategories = await sbFetch('orangerie_categories?select=*&order=name');
-  }
-  const sel = document.getElementById('f-section');
-  sel.innerHTML = '<option value="">Select section...</option>' +
-    allCategories.map(c => `<option value="${c.name}" ${c.name===selected?'selected':''}>${c.name}</option>`).join('');
+async function populateSecSelect(selected='') {
+  if (!allCats.length) allCats = await sb('orangerie_categories?select=*&order=name').catch(()=>[]);
+  document.getElementById('f-section').innerHTML =
+    '<option value="">Select section...</option>' +
+    allCats.map(c => `<option value="${c.name}" ${c.name===selected?'selected':''}>${c.name}</option>`).join('');
 }
 
 // ── TAGS ──
 function renderTags() {
-  const wrap = document.getElementById('tags-wrap');
-  wrap.innerHTML = currentTags.map((t,i) => `
+  document.getElementById('tags-area').innerHTML = curTags.map((t,i) => `
     <span class="tag-chip">${t}
-      <button onclick="removeTag(${i})" type="button">×</button>
+      <button class="tag-chip-del" onclick="curTags.splice(${i},1);renderTags()" type="button">×</button>
     </span>`).join('');
 }
 function addTag() {
-  const input = document.getElementById('tag-input');
-  const val   = input.value.trim();
-  if (val && !currentTags.includes(val)) {
-    currentTags.push(val); renderTags();
-  }
-  input.value = '';
+  const inp = document.getElementById('tag-input');
+  const v   = inp.value.trim();
+  if (v && !curTags.includes(v)) { curTags.push(v); renderTags(); }
+  inp.value = '';
 }
-function removeTag(i) { currentTags.splice(i,1); renderTags(); }
-function handleTagKey(e) { if (e.key === 'Enter') { e.preventDefault(); addTag(); } }
 
 // ── FACTS ──
 function renderFacts() {
-  const list = document.getElementById('facts-list');
-  list.innerHTML = currentFacts.map((f,i) => `
+  document.getElementById('facts-list').innerHTML = curFacts.map((f,i) => `
     <div class="fact-row">
-      <input type="text" value="${f.label||''}" placeholder="Label" oninput="updateFact(${i},'label',this.value)">
-      <input type="text" value="${f.value||''}" placeholder="Value" oninput="updateFact(${i},'value',this.value)">
-      <button class="fact-del" onclick="removeFact(${i})" type="button">×</button>
+      <input type="text" value="${f.label||''}" placeholder="Label" oninput="curFacts[${i}].label=this.value">
+      <input type="text" value="${f.value||''}" placeholder="Value" oninput="curFacts[${i}].value=this.value">
+      <button class="fact-del-btn" onclick="curFacts.splice(${i},1);renderFacts()" type="button">×</button>
     </div>`).join('');
 }
-function addFact() { currentFacts.push({label:'',value:''}); renderFacts(); }
-function removeFact(i) { currentFacts.splice(i,1); renderFacts(); }
-function updateFact(i,key,val) { currentFacts[i][key] = val; }
+function addFact() { curFacts.push({label:'',value:''}); renderFacts(); }
 
 // ── CATEGORIES ──
-async function loadCategories() {
+async function loadCats() {
   try {
-    allCategories = await sbFetch('orangerie_categories?select=*&order=name');
-    renderCategories();
-  } catch(e) { showToast('Error loading categories: ' + e.message, 'error'); }
-}
-
-function renderCategories() {
-  const grid = document.getElementById('cat-grid');
-  if (!allCategories.length) {
-    grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1">No categories yet.</div>';
-    return;
-  }
-  grid.innerHTML = allCategories.map(c => `
-    <div class="cat-card">
-      <div class="cat-card-name">${c.name}</div>
-      <div class="cat-card-desc">${c.description||'—'}</div>
-      <div style="display:flex;gap:8px">
-        <button class="btn btn-danger btn-sm" onclick="deleteCategory('${c.id}','${c.name}')">Delete</button>
-      </div>
-    </div>`).join('');
+    allCats = await sb('orangerie_categories?select=*&order=name');
+    const grid = document.getElementById('cat-cards');
+    if (!allCats.length) { grid.innerHTML='<div class="empty" style="grid-column:1/-1">No categories yet.</div>'; return; }
+    grid.innerHTML = allCats.map(c => `
+      <div class="cat-card">
+        <div class="cat-card-name">${c.name}</div>
+        <div class="cat-card-desc">${c.description||'—'}</div>
+        <button class="btn btn-danger btn-sm" onclick="deleteCat('${c.id}','${c.name}')">Delete</button>
+      </div>`).join('');
+  } catch(e) { toast('Error: '+e.message,'error'); }
 }
 
 async function addCategory() {
   const name = document.getElementById('new-cat-name').value.trim();
   const desc = document.getElementById('new-cat-desc').value.trim();
-  if (!name) { showToast('Category name required.', 'error'); return; }
+  if (!name) { toast('Category name required.','error'); return; }
   try {
-    await sbFetch('orangerie_categories', {
-      method: 'POST', body: JSON.stringify({ name, description: desc||null })
-    });
+    await sb('orangerie_categories', { method:'POST', body:JSON.stringify({name,description:desc||null}) });
     document.getElementById('new-cat-name').value = '';
     document.getElementById('new-cat-desc').value = '';
-    showToast('Category added.', 'success');
-    loadCategories();
-  } catch(e) { showToast('Error: ' + e.message, 'error'); }
+    toast('Category added.','success');
+    loadCats();
+  } catch(e) { toast('Error: '+e.message,'error'); }
 }
 
-async function deleteCategory(id, name) {
-  if (!confirm(`Delete "${name}"? Articles in this category will not be deleted.`)) return;
+async function deleteCat(id, name) {
+  if (!confirm(`Delete "${name}"?`)) return;
   try {
-    await sbFetch(`orangerie_categories?id=eq.${id}`, { method: 'DELETE' });
-    showToast('Category deleted.', 'success');
-    loadCategories();
-  } catch(e) { showToast('Error: ' + e.message, 'error'); }
-}
-
-// ── DELETE MODAL ──
-function openDeleteModal(id) { deleteTargetId = id; document.getElementById('delete-modal').classList.add('open'); }
-function closeModal() { document.getElementById('delete-modal').classList.remove('open'); deleteTargetId = null; }
-async function confirmDelete() {
-  if (!deleteTargetId) return;
-  try {
-    await sbFetch(`orangerie_articles?id=eq.${deleteTargetId}`, { method: 'DELETE' });
-    showToast('Article deleted.', 'success');
-    closeModal();
-    loadArticles();
-    if (document.getElementById('screen-dashboard').classList.contains('active')) loadDashboard();
-  } catch(e) { showToast('Error: ' + e.message, 'error'); }
-}
-
-// ── TOAST ──
-function showToast(msg, type='') {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = `toast${type ? ' '+type : ''} show`;
-  setTimeout(() => t.classList.remove('show'), 3000);
-}
-
-// ── UTILS ──
-function fmtDate(d) {
-  return new Date(d).toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'});
+    await sb(`orangerie_categories?id=eq.${id}`, { method:'DELETE' });
+    toast('Deleted.','success'); loadCats();
+  } catch(e) { toast('Error: '+e.message,'error'); }
 }
 
 // ── SUBSCRIBERS ──
-let allSubs = [];
-
-async function loadSubscribers() {
+async function loadSubs() {
   try {
-    allSubs = await sbFetch('orangerie_subscribers?select=*&order=created_at.desc');
+    allSubs = await sb('orangerie_subscribers?select=*&order=created_at.desc');
     document.getElementById('sub-total').textContent = allSubs.length;
     renderSubs(allSubs);
-  } catch(e) { showToast('Error loading subscribers: ' + e.message, 'error'); }
+  } catch(e) { toast('Error: '+e.message,'error'); }
 }
 
-function renderSubs(subs) {
-  const tbody = document.getElementById('sub-table-body');
-  if (!subs.length) {
-    tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No subscribers yet.</td></tr>';
-    return;
-  }
-  tbody.innerHTML = subs.map(s => `
+function renderSubs(list) {
+  const tbody = document.getElementById('sub-tbody');
+  if (!list.length) { tbody.innerHTML='<tr><td colspan="5" class="empty">No subscribers yet.</td></tr>'; return; }
+  tbody.innerHTML = list.map(s => `
     <tr>
       <td>${s.email}</td>
-      <td class="td-small">${s.source || 'website'}</td>
-      <td><span class="badge ${s.status === 'active' ? 'badge-published' : 'badge-draft'}">${s.status}</span></td>
-      <td class="td-small">${fmtDate(s.created_at)}</td>
-      <td>
-        ${s.status === 'active'
-          ? `<button class="btn btn-outline btn-sm" onclick="unsubscribe('${s.id}')">Unsubscribe</button>`
-          : ''}
-      </td>
+      <td class="td-muted">${s.source||'website'}</td>
+      <td><span class="badge ${s.status==='active'?'badge-pub':'badge-draft'}">${s.status}</span></td>
+      <td class="td-muted">${fmtDate(s.created_at)}</td>
+      <td>${s.status==='active'?`<button class="btn btn-outline btn-xs" onclick="unsubscribe('${s.id}')">Unsubscribe</button>`:''}</td>
     </tr>`).join('');
 }
 
 function filterSubs() {
-  const q = document.getElementById('sub-search').value.toLowerCase();
-  renderSubs(allSubs.filter(s => s.email.toLowerCase().includes(q)));
+  const q  = document.getElementById('sub-search').value.toLowerCase();
+  const st = document.getElementById('sub-f-status').value;
+  renderSubs(allSubs.filter(s => (!q||s.email.toLowerCase().includes(q)) && (!st||s.status===st)));
 }
 
 async function unsubscribe(id) {
   try {
-    await sbFetch(`orangerie_subscribers?id=eq.${id}`, {
-      method: 'PATCH', body: JSON.stringify({ status: 'unsubscribed' })
-    });
-    showToast('Subscriber updated.', 'success');
-    loadSubscribers();
-  } catch(e) { showToast('Error: ' + e.message, 'error'); }
+    await sb(`orangerie_subscribers?id=eq.${id}`, { method:'PATCH', body:JSON.stringify({status:'unsubscribed'}) });
+    toast('Updated.','success'); loadSubs();
+  } catch(e) { toast('Error: '+e.message,'error'); }
 }
 
 function exportCSV() {
-  if (!allSubs.length) { showToast('No subscribers to export.', 'error'); return; }
-  const rows = [
-    ['Email', 'Status', 'Source', 'Date'],
-    ...allSubs.map(s => [s.email, s.status, s.source, fmtDate(s.created_at)])
-  ];
-  const csv  = rows.map(r => r.join(',')).join('\n');
-  const blob = new Blob([csv], { type: 'text/csv' });
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href = url; a.download = 'orangerie-subscribers.csv'; a.click();
-  URL.revokeObjectURL(url);
-  showToast('CSV exported.', 'success');
+  if (!allSubs.length) { toast('No subscribers to export.','error'); return; }
+  const csv = [['Email','Status','Source','Date'], ...allSubs.map(s=>[s.email,s.status,s.source,fmtDate(s.created_at)])].map(r=>r.join(',')).join('\n');
+  const a   = Object.assign(document.createElement('a'),{href:URL.createObjectURL(new Blob([csv],{type:'text/csv'})),download:'orangerie-subscribers.csv'});
+  a.click(); toast('CSV exported.','success');
 }
 
+// ── DELETE ──
+function openDel(id) { delId=id; document.getElementById('del-modal').classList.add('open'); }
+function closeModal() { document.getElementById('del-modal').classList.remove('open'); delId=null; }
+async function confirmDelete() {
+  if (!delId) return;
+  try {
+    await sb(`orangerie_articles?id=eq.${delId}`, { method:'DELETE' });
+    toast('Article deleted.','success');
+    closeModal();
+    loadArts();
+  } catch(e) { toast('Error: '+e.message,'error'); }
+}
+
+// ── TOAST ──
+function toast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent=msg; t.className=`toast${type?' '+type:''} show`;
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// ── UTILS ──
+function fmtDate(d) { return new Date(d).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}); }
+
 // ── INIT ──
-(async () => {
-  await populateSectionSelect();
-  loadDashboard();
-})();
+(async()=>{ await populateSecSelect(); loadDash(); })();
 </script>
 </body>
 </html>
