@@ -379,6 +379,9 @@ tbody td { padding: 14px 20px; font-size: 14px; color: var(--ink); vertical-alig
       <div class="sidebar-nav-item" onclick="showScreen('categories')">
         <span class="icon">◉</span> Categories
       </div>
+      <div class="sidebar-nav-item" onclick="showScreen('subscribers')">
+        <span class="icon">✉</span> Subscribers
+      </div>
     </nav>
     <div class="sidebar-footer">
       The Orangerie · mmxxvi
@@ -651,6 +654,38 @@ Every place worth knowing has a scent...
       </div>
     </div>
 
+    <!-- SUBSCRIBERS -->
+    <div id="screen-subscribers" class="screen">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
+        <div>
+          <div style="font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-lt);margin-bottom:6px">Total</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:300;font-style:italic" id="sub-total">—</div>
+        </div>
+        <button class="btn btn-outline" onclick="exportCSV()">Export CSV</button>
+      </div>
+
+      <div class="table-wrap">
+        <div class="table-header">
+          <div class="table-title">Subscribers</div>
+          <input class="search-input" type="text" placeholder="Search email..." id="sub-search" oninput="filterSubs()" style="max-width:240px;font-size:13px;padding:8px 12px">
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Email</th>
+              <th>Source</th>
+              <th>Status</th>
+              <th>Date</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="sub-table-body">
+            <tr><td colspan="5" class="loading">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
   </main>
 </div>
 
@@ -720,7 +755,8 @@ function showScreen(id) {
     'dashboard': 'Dashboard',
     'articles': 'All Articles',
     'new-article': editingId ? 'Edit Article' : 'New Article',
-    'categories': 'Categories'
+    'categories': 'Categories',
+    'subscribers': 'Subscribers'
   };
   document.getElementById('topbar-title').textContent = titles[id] || id;
 
@@ -737,6 +773,7 @@ function showScreen(id) {
   if (id === 'dashboard') loadDashboard();
   if (id === 'articles') loadArticles();
   if (id === 'categories') loadCategories();
+  if (id === 'subscribers') loadSubscribers();
   if (id === 'new-article' && !editingId) resetForm();
 }
 
@@ -1065,6 +1102,67 @@ function showToast(msg, type='') {
 // ── UTILS ──
 function fmtDate(d) {
   return new Date(d).toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'});
+}
+
+// ── SUBSCRIBERS ──
+let allSubs = [];
+
+async function loadSubscribers() {
+  try {
+    allSubs = await sbFetch('orangerie_subscribers?select=*&order=created_at.desc');
+    document.getElementById('sub-total').textContent = allSubs.length;
+    renderSubs(allSubs);
+  } catch(e) { showToast('Error loading subscribers: ' + e.message, 'error'); }
+}
+
+function renderSubs(subs) {
+  const tbody = document.getElementById('sub-table-body');
+  if (!subs.length) {
+    tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No subscribers yet.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = subs.map(s => `
+    <tr>
+      <td>${s.email}</td>
+      <td class="td-small">${s.source || 'website'}</td>
+      <td><span class="badge ${s.status === 'active' ? 'badge-published' : 'badge-draft'}">${s.status}</span></td>
+      <td class="td-small">${fmtDate(s.created_at)}</td>
+      <td>
+        ${s.status === 'active'
+          ? `<button class="btn btn-outline btn-sm" onclick="unsubscribe('${s.id}')">Unsubscribe</button>`
+          : ''}
+      </td>
+    </tr>`).join('');
+}
+
+function filterSubs() {
+  const q = document.getElementById('sub-search').value.toLowerCase();
+  renderSubs(allSubs.filter(s => s.email.toLowerCase().includes(q)));
+}
+
+async function unsubscribe(id) {
+  try {
+    await sbFetch(`orangerie_subscribers?id=eq.${id}`, {
+      method: 'PATCH', body: JSON.stringify({ status: 'unsubscribed' })
+    });
+    showToast('Subscriber updated.', 'success');
+    loadSubscribers();
+  } catch(e) { showToast('Error: ' + e.message, 'error'); }
+}
+
+function exportCSV() {
+  if (!allSubs.length) { showToast('No subscribers to export.', 'error'); return; }
+  const rows = [
+    ['Email', 'Status', 'Source', 'Date'],
+    ...allSubs.map(s => [s.email, s.status, s.source, fmtDate(s.created_at)])
+  ];
+  const csv  = rows.map(r => r.join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = 'orangerie-subscribers.csv'; a.click();
+  URL.revokeObjectURL(url);
+  showToast('CSV exported.', 'success');
 }
 
 // ── INIT ──
