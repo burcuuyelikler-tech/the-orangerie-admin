@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Orangerie — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:       #F0EDE5;
+  --panel:    #FAFAF8;
+  --ink:      #1C1814;
+  --ink-mid:  #4A433B;
+  --ink-lt:   #8A8078;
+  --gold:     #A8823C;
+  --gold-lt:  #C9A85C;
+  --border:   rgba(28,24,20,.12);
+  --green:    #2D6A4F;
+  --red:      #C0392B;
+  --sidebar:  #1C1814;
+}
+
+html, body { height: 100%; }
+body {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  background: var(--bg);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  display: flex; flex-direction: column;
+}
+
+/* ── LAYOUT ── */
+.app { display: flex; height: 100vh; overflow: hidden; }
+
+/* SIDEBAR */
+.sidebar {
+  width: 220px; flex-shrink: 0;
+  background: var(--sidebar);
+  display: flex; flex-direction: column;
+  padding: 0;
+}
+.sidebar-logo {
+  padding: 24px 24px 20px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.sidebar-logo-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 400; font-size: 17px;
+  letter-spacing: .05em; color: #F0EDE5;
+}
+.sidebar-logo-sub {
+  font-size: 10px; letter-spacing: .2em; text-transform: uppercase;
+  color: rgba(240,237,229,.35); margin-top: 3px;
+}
+.sidebar-nav { flex: 1; padding: 16px 0; }
+.sidebar-nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 24px;
+  font-size: 12px; letter-spacing: .12em; text-transform: uppercase;
+  color: rgba(240,237,229,.5);
+  cursor: pointer; transition: all .2s;
+  border-left: 2px solid transparent;
+}
+.sidebar-nav-item:hover { color: rgba(240,237,229,.9); background: rgba(255,255,255,.04); }
+.sidebar-nav-item.active { color: var(--gold-lt); border-color: var(--gold-lt); background: rgba(201,168,92,.08); }
+.sidebar-nav-item .icon { font-size: 14px; width: 18px; text-align: center; }
+
+.sidebar-footer {
+  padding: 16px 24px;
+  border-top: 1px solid rgba(255,255,255,.08);
+  font-size: 11px; color: rgba(240,237,229,.3);
+  font-style: italic;
+}
+
+/* MAIN */
+.main { flex: 1; overflow-y: auto; background: var(--bg); }
+
+.topbar {
+  position: sticky; top: 0; z-index: 50;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  padding: 0 40px; height: 56px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.topbar-title {
+  font-size: 14px; letter-spacing: .15em; text-transform: uppercase;
+  color: var(--ink-mid); font-weight: 400;
+}
+.topbar-actions { display: flex; gap: 12px; align-items: center; }
+
+/* SCREENS */
+.screen { display: none; padding: 40px; }
+.screen.active { display: block; }
+
+/* ── COMPONENTS ── */
+.btn {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 11px; letter-spacing: .2em; text-transform: uppercase;
+  padding: 10px 22px; border: none; cursor: pointer;
+  transition: all .2s; display: inline-flex; align-items: center; gap: 8px;
+}
+.btn-primary { background: var(--ink); color: var(--bg); }
+.btn-primary:hover { background: #333; }
+.btn-gold { background: var(--gold); color: white; }
+.btn-gold:hover { background: var(--gold-lt); }
+.btn-outline {
+  background: transparent; color: var(--ink-mid);
+  border: 1px solid var(--border);
+}
+.btn-outline:hover { border-color: var(--ink); color: var(--ink); }
+.btn-danger { background: transparent; color: var(--red); border: 1px solid rgba(192,57,43,.3); }
+.btn-danger:hover { background: var(--red); color: white; }
+.btn-sm { padding: 7px 16px; font-size: 10px; }
+.btn-success { background: var(--green); color: white; }
+.btn-success:hover { background: #236b3f; }
+
+/* STATS ROW */
+.stats-row {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 16px; margin-bottom: 40px;
+}
+.stat-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  padding: 24px 28px;
+}
+.stat-card-n {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 42px; font-weight: 300; font-style: italic;
+  color: var(--ink); line-height: 1;
+}
+.stat-card-l {
+  font-size: 10px; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--ink-lt); margin-top: 6px;
+}
+
+/* TABLE */
+.table-wrap {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.table-header {
+  padding: 20px 28px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.table-title {
+  font-size: 11px; letter-spacing: .22em; text-transform: uppercase;
+  color: var(--ink-lt);
+}
+table { width: 100%; border-collapse: collapse; }
+thead th {
+  padding: 12px 20px;
+  font-size: 10px; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--ink-lt); text-align: left;
+  border-bottom: 1px solid var(--border);
+  background: rgba(0,0,0,.02);
+}
+tbody tr { border-bottom: 1px solid var(--border); transition: background .15s; }
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: rgba(168,130,60,.04); }
+tbody td { padding: 14px 20px; font-size: 14px; color: var(--ink); vertical-align: middle; }
+.td-small { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-lt); }
+
+/* STATUS BADGE */
+.badge {
+  display: inline-block; font-size: 9px; letter-spacing: .18em;
+  text-transform: uppercase; padding: 4px 10px; border-radius: 0;
+}
+.badge-published { background: rgba(45,106,79,.12); color: var(--green); }
+.badge-draft { background: rgba(138,128,120,.1); color: var(--ink-lt); }
+
+/* FORM */
+.form-section {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  margin-bottom: 24px;
+}
+.form-section-header {
+  padding: 18px 28px;
+  border-bottom: 1px solid var(--border);
+  font-size: 10px; letter-spacing: .25em; text-transform: uppercase;
+  color: var(--ink-lt);
+}
+.form-body { padding: 28px; display: flex; flex-direction: column; gap: 20px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+
+.field { display: flex; flex-direction: column; gap: 7px; }
+.field label {
+  font-size: 10px; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--ink-lt);
+}
+.field input, .field select, .field textarea {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 15px; color: var(--ink);
+  background: var(--bg); border: 1px solid var(--border);
+  padding: 10px 14px; outline: none;
+  transition: border-color .2s;
+  width: 100%;
+}
+.field input:focus, .field select:focus, .field textarea:focus {
+  border-color: var(--gold);
+}
+.field textarea { resize: vertical; min-height: 120px; line-height: 1.7; }
+.field textarea.tall { min-height: 280px; }
+.field-hint { font-size: 11px; font-style: italic; color: var(--ink-lt); margin-top: 2px; }
+
+/* FACTS EDITOR */
+.facts-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+.fact-row {
+  display: grid; grid-template-columns: 1fr 2fr auto;
+  gap: 8px; align-items: center;
+}
+.fact-row input {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 14px; color: var(--ink);
+  background: var(--bg); border: 1px solid var(--border);
+  padding: 8px 12px; outline: none;
+}
+.fact-row input:focus { border-color: var(--gold); }
+.fact-del {
+  width: 32px; height: 32px;
+  background: none; border: 1px solid var(--border);
+  color: var(--ink-lt); cursor: pointer;
+  font-size: 14px; display: flex; align-items: center; justify-content: center;
+  transition: all .2s;
+}
+.fact-del:hover { border-color: var(--red); color: var(--red); }
+
+/* IMAGE UPLOAD */
+.img-upload-area {
+  border: 1px dashed rgba(168,130,60,.4);
+  padding: 32px;
+  text-align: center;
+  cursor: pointer;
+  transition: all .2s;
+  background: rgba(168,130,60,.02);
+  position: relative;
+}
+.img-upload-area:hover { border-color: var(--gold); background: rgba(168,130,60,.05); }
+.img-upload-area input[type="file"] {
+  position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+}
+.img-upload-label {
+  font-size: 11px; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--ink-lt); display: block; margin-bottom: 6px;
+}
+.img-upload-hint { font-size: 12px; font-style: italic; color: var(--ink-lt); }
+.img-preview {
+  margin-top: 12px; width: 100%; max-height: 200px;
+  object-fit: cover; display: none;
+}
+.img-preview.visible { display: block; }
+
+/* TAGS INPUT */
+.tags-wrap { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.tag-chip {
+  font-size: 10px; letter-spacing: .15em; text-transform: uppercase;
+  color: var(--ink-mid); border: 1px solid var(--border);
+  padding: 5px 12px; display: flex; align-items: center; gap: 6px;
+}
+.tag-chip button {
+  background: none; border: none; cursor: pointer;
+  color: var(--ink-lt); font-size: 12px; line-height: 1;
+  padding: 0; transition: color .2s;
+}
+.tag-chip button:hover { color: var(--red); }
+.tag-input-wrap { display: flex; gap: 8px; }
+.tag-input-wrap input {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 14px; color: var(--ink);
+  background: var(--bg); border: 1px solid var(--border);
+  padding: 8px 12px; outline: none; width: 160px;
+}
+.tag-input-wrap input:focus { border-color: var(--gold); }
+
+/* CATEGORY CARDS */
+.cat-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+.cat-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  padding: 24px;
+}
+.cat-card-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px; font-weight: 400; color: var(--ink); margin-bottom: 8px;
+}
+.cat-card-desc { font-size: 13px; font-style: italic; color: var(--ink-lt); line-height: 1.6; margin-bottom: 16px; }
+
+/* TOAST */
+.toast {
+  position: fixed; bottom: 32px; right: 32px; z-index: 9999;
+  background: var(--ink); color: var(--bg);
+  padding: 14px 24px;
+  font-size: 13px; letter-spacing: .05em;
+  transform: translateY(80px); opacity: 0;
+  transition: all .3s ease;
+  pointer-events: none;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.success { background: var(--green); }
+.toast.error { background: var(--red); }
+
+/* MODAL */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(28,24,20,.6);
+  z-index: 500; display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity .25s;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal {
+  background: var(--panel); width: 480px; max-width: 90vw;
+  padding: 36px; position: relative;
+}
+.modal h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 24px; font-weight: 300; margin-bottom: 14px;
+}
+.modal p { font-size: 14px; font-style: italic; color: var(--ink-mid); line-height: 1.6; margin-bottom: 28px; }
+.modal-actions { display: flex; gap: 12px; justify-content: flex-end; }
+
+/* EMPTY STATE */
+.empty-state {
+  text-align: center; padding: 80px 40px;
+  font-size: 15px; font-style: italic; color: var(--ink-lt);
+}
+
+/* LOADING */
+.loading {
+  text-align: center; padding: 60px;
+  font-size: 13px; letter-spacing: .15em; text-transform: uppercase;
+  color: var(--ink-lt);
+}
+
+/* SEARCH */
+.search-bar {
+  display: flex; gap: 12px; margin-bottom: 24px; align-items: center;
+}
+.search-input {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 15px; color: var(--ink);
+  background: var(--panel); border: 1px solid var(--border);
+  padding: 10px 16px; outline: none; flex: 1; max-width: 360px;
+  transition: border-color .2s;
+}
+.search-input:focus { border-color: var(--gold); }
+.filter-select {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 14px; color: var(--ink);
+  background: var(--panel); border: 1px solid var(--border);
+  padding: 10px 14px; outline: none; cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-title">The Orangerie</div>
+      <div class="sidebar-logo-sub">Admin Panel</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-nav-item active" onclick="showScreen('dashboard')">
+        <span class="icon">◈</span> Dashboard
+      </div>
+      <div class="sidebar-nav-item" onclick="showScreen('articles')">
+        <span class="icon">≡</span> Articles
+      </div>
+      <div class="sidebar-nav-item" onclick="showScreen('new-article')">
+        <span class="icon">+</span> New Article
+      </div>
+      <div class="sidebar-nav-item" onclick="showScreen('categories')">
+        <span class="icon">◉</span> Categories
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      The Orangerie · mmxxvi
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div class="topbar-title" id="topbar-title">Dashboard</div>
+      <div class="topbar-actions" id="topbar-actions"></div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="screen-dashboard" class="screen active">
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-card-n" id="stat-total">—</div>
+          <div class="stat-card-l">Total Articles</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-n" id="stat-published">—</div>
+          <div class="stat-card-l">Published</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-n" id="stat-drafts">—</div>
+          <div class="stat-card-l">Drafts</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-n" id="stat-cats">—</div>
+          <div class="stat-card-l">Categories</div>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <div class="table-header">
+          <div class="table-title">Recent Articles</div>
+          <button class="btn btn-primary btn-sm" onclick="showScreen('new-article')">+ New Article</button>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Section</th>
+              <th>Status</th>
+              <th>Date</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="dash-table-body">
+            <tr><td colspan="5" class="loading">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ARTICLES LIST -->
+    <div id="screen-articles" class="screen">
+      <div class="search-bar">
+        <input class="search-input" type="text" placeholder="Search articles..." id="search-input" oninput="filterArticles()">
+        <select class="filter-select" id="filter-status" onchange="filterArticles()">
+          <option value="">All Status</option>
+          <option value="true">Published</option>
+          <option value="false">Drafts</option>
+        </select>
+        <select class="filter-select" id="filter-section" onchange="filterArticles()">
+          <option value="">All Sections</option>
+        </select>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <div class="table-title">All Articles</div>
+          <button class="btn btn-primary btn-sm" onclick="showScreen('new-article')">+ New Article</button>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Section</th>
+              <th>Status</th>
+              <th>Created</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="articles-table-body">
+            <tr><td colspan="5" class="loading">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- NEW / EDIT ARTICLE -->
+    <div id="screen-new-article" class="screen">
+
+      <input type="hidden" id="edit-id">
+
+      <!-- Cover image -->
+      <div class="form-section">
+        <div class="form-section-header">Cover Image</div>
+        <div class="form-body">
+          <div class="form-row">
+            <div class="field">
+              <label>Upload Cover Photo</label>
+              <div class="img-upload-area" id="cover-upload-area">
+                <input type="file" accept="image/*" onchange="handleImageUpload(this,'cover')">
+                <span class="img-upload-label">Click or drag to upload</span>
+                <span class="img-upload-hint">JPG, PNG, WEBP — max 5MB</span>
+                <img id="cover-preview" class="img-preview" alt="">
+              </div>
+              <input type="hidden" id="cover-image-url">
+            </div>
+            <div class="field">
+              <label>Upload Sidebar Photo</label>
+              <div class="img-upload-area">
+                <input type="file" accept="image/*" onchange="handleImageUpload(this,'sidebar')">
+                <span class="img-upload-label">Click or drag to upload</span>
+                <span class="img-upload-hint">Used in article sidebar</span>
+                <img id="sidebar-preview" class="img-preview" alt="">
+              </div>
+              <input type="hidden" id="sidebar-image-url">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="field">
+              <label>Cover Emoji (if no photo)</label>
+              <input type="text" id="cover-emoji" placeholder="🌿" maxlength="4">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Core fields -->
+      <div class="form-section">
+        <div class="form-section-header">Article Details</div>
+        <div class="form-body">
+          <div class="field">
+            <label>Title *</label>
+            <input type="text" id="f-title" placeholder="Why Monaco Remains Irreplaceable" oninput="autoSlug()">
+          </div>
+          <div class="field">
+            <label>Subtitle / Italic part</label>
+            <input type="text" id="f-subtitle" placeholder="e.g. Irreplaceable — this becomes italic in the headline">
+            <div class="field-hint">Leave blank if the title has no italic part</div>
+          </div>
+          <div class="form-row">
+            <div class="field">
+              <label>Section *</label>
+              <select id="f-section">
+                <option value="">Select section...</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Slug *</label>
+              <input type="text" id="f-slug" placeholder="why-monaco-remains-irreplaceable">
+              <div class="field-hint">Auto-generated from title. URL: /article/slug</div>
+            </div>
+          </div>
+          <div class="field">
+            <label>Deck / Subtitle paragraph</label>
+            <textarea id="f-dek" rows="2" placeholder="A meditation on place, privilege, and permanence..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Body -->
+      <div class="form-section">
+        <div class="form-section-header">Content</div>
+        <div class="form-body">
+          <div class="field">
+            <label>Opening Lede</label>
+            <textarea id="f-lede" rows="3" placeholder="The first paragraph — sets the atmosphere..."></textarea>
+          </div>
+          <div class="field">
+            <label>Body Text</label>
+            <textarea id="f-body" class="tall" placeholder="Full article text. Use ## for section headings, >> for pull quotes.
+
+Example:
+## On the Matter of Scent
+
+Every place worth knowing has a scent...
+
+>> The harbour at dusk. A life lived not loudly, but exquisitely."></textarea>
+            <div class="field-hint">## Heading · >> Pull quote (inline) · Plain paragraphs separated by blank lines</div>
+          </div>
+          <div class="field">
+            <label>Pull Quote (for sidebar highlight)</label>
+            <textarea id="f-pullquote" rows="2" placeholder="The harbour at dusk. Cashmere against cool marble..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar data -->
+      <div class="form-section">
+        <div class="form-section-header">Sidebar — Context & Stats</div>
+        <div class="form-body">
+          <div class="form-row">
+            <div class="field">
+              <label>Stat Number</label>
+              <input type="text" id="f-stat-n" placeholder="2 km²">
+            </div>
+            <div class="field">
+              <label>Stat Label</label>
+              <input type="text" id="f-stat-l" placeholder="The principality's surface area">
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Context Facts</label>
+            <div class="facts-list" id="facts-list"></div>
+            <button class="btn btn-outline btn-sm" onclick="addFact()" type="button">+ Add Fact</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tags -->
+      <div class="form-section">
+        <div class="form-section-header">Tags</div>
+        <div class="form-body">
+          <div class="field">
+            <label>Tags</label>
+            <div class="tags-wrap" id="tags-wrap"></div>
+            <div class="tag-input-wrap" style="margin-top:10px">
+              <input type="text" id="tag-input" placeholder="Add tag..." onkeydown="handleTagKey(event)">
+              <button class="btn btn-outline btn-sm" onclick="addTag()" type="button">Add</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Publish -->
+      <div class="form-section">
+        <div class="form-section-header">Publishing</div>
+        <div class="form-body">
+          <div class="form-row">
+            <div class="field">
+              <label>Status</label>
+              <select id="f-published">
+                <option value="false">Draft — not visible on site</option>
+                <option value="true">Published — live on site</option>
+              </select>
+            </div>
+          </div>
+          <div style="display:flex;gap:12px;padding-top:8px">
+            <button class="btn btn-primary" onclick="saveArticle(false)">Save Draft</button>
+            <button class="btn btn-success" onclick="saveArticle(true)">Publish</button>
+            <button class="btn btn-outline" onclick="showScreen('articles')">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /new-article -->
+
+    <!-- CATEGORIES -->
+    <div id="screen-categories" class="screen">
+      <div style="margin-bottom:32px;display:flex;gap:12px;align-items:flex-end">
+        <div class="field" style="flex:1;max-width:280px">
+          <label>Category Name</label>
+          <input type="text" id="new-cat-name" placeholder="e.g. Food & Wine">
+        </div>
+        <div class="field" style="flex:2">
+          <label>Description</label>
+          <input type="text" id="new-cat-desc" placeholder="Short description...">
+        </div>
+        <button class="btn btn-primary" onclick="addCategory()">Add Category</button>
+      </div>
+      <div class="cat-grid" id="cat-grid">
+        <div class="loading" style="grid-column:1/-1">Loading...</div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- DELETE MODAL -->
+<div class="modal-overlay" id="delete-modal">
+  <div class="modal">
+    <h3>Delete Article</h3>
+    <p>This action cannot be undone. The article will be permanently removed from the journal.</p>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-danger" onclick="confirmDelete()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── SUPABASE CONFIG ──
+const SB_URL  = 'https://ucwgkduvpnklfggleupb.supabase.co';
+const SB_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVjd2drZHV2cG5rbGZnZ2xldXBiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2MDE1NzcsImV4cCI6MjA4NzE3NzU3N30.AKBjKoYp2xie6qd19crJVMIJDFzmXPTqU2BTtFHnypw';
+const BUCKET  = 'orangerie-images';
+const HEADERS = { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' };
+
+// ── STATE ──
+let allArticles = [];
+let allCategories = [];
+let currentTags = [];
+let currentFacts = [];
+let deleteTargetId = null;
+let editingId = null;
+
+// ── SUPABASE HELPERS ──
+async function sbFetch(path, opts={}) {
+  const res = await fetch(`${SB_URL}/rest/v1/${path}`, {
+    headers: HEADERS, ...opts
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(err);
+  }
+  return res.json().catch(() => null);
+}
+
+async function uploadImage(file, name) {
+  const ext  = file.name.split('.').pop();
+  const path = `articles/${Date.now()}-${name}.${ext}`;
+  const res  = await fetch(`${SB_URL}/storage/v1/object/${BUCKET}/${path}`, {
+    method: 'POST',
+    headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': file.type },
+    body: file
+  });
+  if (!res.ok) throw new Error('Upload failed');
+  return `${SB_URL}/storage/v1/object/public/${BUCKET}/${path}`;
+}
+
+// ── ROUTING ──
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.sidebar-nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(`screen-${id}`).classList.add('active');
+  document.querySelectorAll('.sidebar-nav-item').forEach(n => {
+    if (n.getAttribute('onclick')?.includes(id)) n.classList.add('active');
+  });
+  const titles = {
+    'dashboard': 'Dashboard',
+    'articles': 'All Articles',
+    'new-article': editingId ? 'Edit Article' : 'New Article',
+    'categories': 'Categories'
+  };
+  document.getElementById('topbar-title').textContent = titles[id] || id;
+
+  const actions = document.getElementById('topbar-actions');
+  actions.innerHTML = '';
+  if (id === 'new-article' && editingId) {
+    const btn = document.createElement('button');
+    btn.className = 'btn btn-outline btn-sm';
+    btn.textContent = '← Back to Articles';
+    btn.onclick = () => showScreen('articles');
+    actions.appendChild(btn);
+  }
+
+  if (id === 'dashboard') loadDashboard();
+  if (id === 'articles') loadArticles();
+  if (id === 'categories') loadCategories();
+  if (id === 'new-article' && !editingId) resetForm();
+}
+
+// ── DASHBOARD ──
+async function loadDashboard() {
+  try {
+    const articles = await sbFetch('orangerie_articles?select=id,published,section,title,created_at&order=created_at.desc');
+    const cats     = await sbFetch('orangerie_categories?select=id');
+
+    const total     = articles.length;
+    const published = articles.filter(a => a.published).length;
+    const drafts    = total - published;
+
+    document.getElementById('stat-total').textContent     = total;
+    document.getElementById('stat-published').textContent = published;
+    document.getElementById('stat-drafts').textContent    = drafts;
+    document.getElementById('stat-cats').textContent      = cats.length;
+
+    const tbody = document.getElementById('dash-table-body');
+    if (!articles.length) {
+      tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No articles yet. Create your first one.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = articles.slice(0,8).map(a => `
+      <tr>
+        <td><strong>${a.title}</strong></td>
+        <td class="td-small">${a.section}</td>
+        <td><span class="badge ${a.published ? 'badge-published' : 'badge-draft'}">${a.published ? 'Published' : 'Draft'}</span></td>
+        <td class="td-small">${fmtDate(a.created_at)}</td>
+        <td><button class="btn btn-outline btn-sm" onclick="editArticle('${a.id}')">Edit</button></td>
+      </tr>`).join('');
+  } catch(e) { showToast('Error loading dashboard: ' + e.message, 'error'); }
+}
+
+// ── ARTICLES LIST ──
+async function loadArticles() {
+  try {
+    allArticles = await sbFetch('orangerie_articles?select=*&order=created_at.desc');
+    renderArticlesTable(allArticles);
+    populateSectionFilter();
+  } catch(e) {
+    document.getElementById('articles-table-body').innerHTML =
+      `<tr><td colspan="5" style="padding:20px;color:var(--red);font-style:italic">${e.message}</td></tr>`;
+  }
+}
+
+function renderArticlesTable(articles) {
+  const tbody = document.getElementById('articles-table-body');
+  if (!articles.length) {
+    tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No articles found.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = articles.map(a => `
+    <tr>
+      <td><strong>${a.title}</strong>${a.subtitle ? `<em style="color:var(--ink-lt);font-size:13px"> — ${a.subtitle}</em>` : ''}</td>
+      <td class="td-small">${a.section}</td>
+      <td><span class="badge ${a.published ? 'badge-published' : 'badge-draft'}">${a.published ? 'Published' : 'Draft'}</span></td>
+      <td class="td-small">${fmtDate(a.created_at)}</td>
+      <td style="display:flex;gap:8px">
+        <button class="btn btn-outline btn-sm" onclick="editArticle('${a.id}')">Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="openDeleteModal('${a.id}')">Delete</button>
+      </td>
+    </tr>`).join('');
+}
+
+function filterArticles() {
+  const q       = document.getElementById('search-input').value.toLowerCase();
+  const status  = document.getElementById('filter-status').value;
+  const section = document.getElementById('filter-section').value;
+  const filtered = allArticles.filter(a => {
+    const matchQ = !q || a.title.toLowerCase().includes(q) || a.section.toLowerCase().includes(q);
+    const matchS = !status || String(a.published) === status;
+    const matchC = !section || a.section === section;
+    return matchQ && matchS && matchC;
+  });
+  renderArticlesTable(filtered);
+}
+
+function populateSectionFilter() {
+  const secs = [...new Set(allArticles.map(a => a.section))];
+  const sel  = document.getElementById('filter-section');
+  sel.innerHTML = '<option value="">All Sections</option>' +
+    secs.map(s => `<option value="${s}">${s}</option>`).join('');
+}
+
+// ── NEW / EDIT FORM ──
+function resetForm() {
+  editingId = null;
+  document.getElementById('edit-id').value = '';
+  ['f-title','f-subtitle','f-slug','f-dek','f-lede','f-body','f-pullquote','f-stat-n','f-stat-l','cover-emoji'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('cover-emoji').value = '📰';
+  document.getElementById('f-published').value = 'false';
+  document.getElementById('cover-image-url').value = '';
+  document.getElementById('sidebar-image-url').value = '';
+  document.getElementById('cover-preview').className = 'img-preview';
+  document.getElementById('sidebar-preview').className = 'img-preview';
+  currentTags = [];
+  currentFacts = [];
+  renderTags();
+  renderFacts();
+}
+
+async function editArticle(id) {
+  editingId = id;
+  showScreen('new-article');
+  try {
+    const [a] = await sbFetch(`orangerie_articles?id=eq.${id}&select=*`);
+    if (!a) return;
+    document.getElementById('edit-id').value       = a.id;
+    document.getElementById('f-title').value       = a.title || '';
+    document.getElementById('f-subtitle').value    = a.subtitle || '';
+    document.getElementById('f-slug').value        = a.slug || '';
+    document.getElementById('f-dek').value         = a.subtitle || '';
+    document.getElementById('f-lede').value        = a.lede || '';
+    document.getElementById('f-body').value        = a.body || '';
+    document.getElementById('f-pullquote').value   = a.pull_quote || '';
+    document.getElementById('f-stat-n').value      = a.stat_number || '';
+    document.getElementById('f-stat-l').value      = a.stat_label || '';
+    document.getElementById('cover-emoji').value   = a.cover_emoji || '📰';
+    document.getElementById('f-published').value   = String(a.published);
+    document.getElementById('cover-image-url').value   = a.cover_image_url || '';
+    document.getElementById('sidebar-image-url').value = a.sidebar_image_url || '';
+
+    if (a.cover_image_url) {
+      const img = document.getElementById('cover-preview');
+      img.src = a.cover_image_url; img.className = 'img-preview visible';
+    }
+    if (a.sidebar_image_url) {
+      const img = document.getElementById('sidebar-preview');
+      img.src = a.sidebar_image_url; img.className = 'img-preview visible';
+    }
+
+    await populateSectionSelect(a.section);
+    currentTags  = a.tags || [];
+    currentFacts = a.facts || [];
+    renderTags();
+    renderFacts();
+    document.getElementById('topbar-title').textContent = 'Edit Article';
+  } catch(e) { showToast('Error loading article: ' + e.message, 'error'); }
+}
+
+async function saveArticle(publish) {
+  const title = document.getElementById('f-title').value.trim();
+  const slug  = document.getElementById('f-slug').value.trim();
+  const sec   = document.getElementById('f-section').value;
+
+  if (!title || !slug || !sec) {
+    showToast('Title, slug and section are required.', 'error'); return;
+  }
+
+  const payload = {
+    title,
+    subtitle:        document.getElementById('f-subtitle').value.trim() || null,
+    section:         sec,
+    slug,
+    lede:            document.getElementById('f-lede').value.trim() || null,
+    body:            document.getElementById('f-body').value.trim() || null,
+    pull_quote:      document.getElementById('f-pullquote').value.trim() || null,
+    cover_emoji:     document.getElementById('cover-emoji').value.trim() || '📰',
+    cover_image_url: document.getElementById('cover-image-url').value || null,
+    sidebar_image_url: document.getElementById('sidebar-image-url').value || null,
+    stat_number:     document.getElementById('f-stat-n').value.trim() || null,
+    stat_label:      document.getElementById('f-stat-l').value.trim() || null,
+    facts:           currentFacts,
+    tags:            currentTags,
+    published:       publish !== undefined ? publish : document.getElementById('f-published').value === 'true'
+  };
+
+  try {
+    const id = document.getElementById('edit-id').value;
+    if (id) {
+      await sbFetch(`orangerie_articles?id=eq.${id}`, {
+        method: 'PATCH', body: JSON.stringify(payload)
+      });
+      showToast('Article updated.', 'success');
+    } else {
+      await sbFetch('orangerie_articles', {
+        method: 'POST', body: JSON.stringify(payload)
+      });
+      showToast(publish ? 'Article published!' : 'Draft saved.', 'success');
+      resetForm();
+    }
+    setTimeout(() => showScreen('articles'), 900);
+  } catch(e) { showToast('Save failed: ' + e.message, 'error'); }
+}
+
+// ── IMAGE UPLOAD ──
+async function handleImageUpload(input, type) {
+  const file = input.files[0]; if (!file) return;
+  showToast('Uploading...', '');
+  try {
+    const url = await uploadImage(file, type);
+    document.getElementById(`${type}-image-url`).value = url;
+    const preview = document.getElementById(`${type}-preview`);
+    preview.src = url; preview.className = 'img-preview visible';
+    showToast('Image uploaded.', 'success');
+  } catch(e) { showToast('Upload failed: ' + e.message, 'error'); }
+}
+
+// ── SLUG ──
+function autoSlug() {
+  const el = document.getElementById('edit-id');
+  if (el.value) return; // don't overwrite on edit
+  const title = document.getElementById('f-title').value;
+  document.getElementById('f-slug').value = title
+    .toLowerCase().replace(/[^a-z0-9\s-]/g,'')
+    .trim().replace(/\s+/g,'-').substring(0,80);
+}
+
+// ── SECTION SELECT ──
+async function populateSectionSelect(selected='') {
+  if (!allCategories.length) {
+    allCategories = await sbFetch('orangerie_categories?select=*&order=name');
+  }
+  const sel = document.getElementById('f-section');
+  sel.innerHTML = '<option value="">Select section...</option>' +
+    allCategories.map(c => `<option value="${c.name}" ${c.name===selected?'selected':''}>${c.name}</option>`).join('');
+}
+
+// ── TAGS ──
+function renderTags() {
+  const wrap = document.getElementById('tags-wrap');
+  wrap.innerHTML = currentTags.map((t,i) => `
+    <span class="tag-chip">${t}
+      <button onclick="removeTag(${i})" type="button">×</button>
+    </span>`).join('');
+}
+function addTag() {
+  const input = document.getElementById('tag-input');
+  const val   = input.value.trim();
+  if (val && !currentTags.includes(val)) {
+    currentTags.push(val); renderTags();
+  }
+  input.value = '';
+}
+function removeTag(i) { currentTags.splice(i,1); renderTags(); }
+function handleTagKey(e) { if (e.key === 'Enter') { e.preventDefault(); addTag(); } }
+
+// ── FACTS ──
+function renderFacts() {
+  const list = document.getElementById('facts-list');
+  list.innerHTML = currentFacts.map((f,i) => `
+    <div class="fact-row">
+      <input type="text" value="${f.label||''}" placeholder="Label" oninput="updateFact(${i},'label',this.value)">
+      <input type="text" value="${f.value||''}" placeholder="Value" oninput="updateFact(${i},'value',this.value)">
+      <button class="fact-del" onclick="removeFact(${i})" type="button">×</button>
+    </div>`).join('');
+}
+function addFact() { currentFacts.push({label:'',value:''}); renderFacts(); }
+function removeFact(i) { currentFacts.splice(i,1); renderFacts(); }
+function updateFact(i,key,val) { currentFacts[i][key] = val; }
+
+// ── CATEGORIES ──
+async function loadCategories() {
+  try {
+    allCategories = await sbFetch('orangerie_categories?select=*&order=name');
+    renderCategories();
+  } catch(e) { showToast('Error loading categories: ' + e.message, 'error'); }
+}
+
+function renderCategories() {
+  const grid = document.getElementById('cat-grid');
+  if (!allCategories.length) {
+    grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1">No categories yet.</div>';
+    return;
+  }
+  grid.innerHTML = allCategories.map(c => `
+    <div class="cat-card">
+      <div class="cat-card-name">${c.name}</div>
+      <div class="cat-card-desc">${c.description||'—'}</div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-danger btn-sm" onclick="deleteCategory('${c.id}','${c.name}')">Delete</button>
+      </div>
+    </div>`).join('');
+}
+
+async function addCategory() {
+  const name = document.getElementById('new-cat-name').value.trim();
+  const desc = document.getElementById('new-cat-desc').value.trim();
+  if (!name) { showToast('Category name required.', 'error'); return; }
+  try {
+    await sbFetch('orangerie_categories', {
+      method: 'POST', body: JSON.stringify({ name, description: desc||null })
+    });
+    document.getElementById('new-cat-name').value = '';
+    document.getElementById('new-cat-desc').value = '';
+    showToast('Category added.', 'success');
+    loadCategories();
+  } catch(e) { showToast('Error: ' + e.message, 'error'); }
+}
+
+async function deleteCategory(id, name) {
+  if (!confirm(`Delete "${name}"? Articles in this category will not be deleted.`)) return;
+  try {
+    await sbFetch(`orangerie_categories?id=eq.${id}`, { method: 'DELETE' });
+    showToast('Category deleted.', 'success');
+    loadCategories();
+  } catch(e) { showToast('Error: ' + e.message, 'error'); }
+}
+
+// ── DELETE MODAL ──
+function openDeleteModal(id) { deleteTargetId = id; document.getElementById('delete-modal').classList.add('open'); }
+function closeModal() { document.getElementById('delete-modal').classList.remove('open'); deleteTargetId = null; }
+async function confirmDelete() {
+  if (!deleteTargetId) return;
+  try {
+    await sbFetch(`orangerie_articles?id=eq.${deleteTargetId}`, { method: 'DELETE' });
+    showToast('Article deleted.', 'success');
+    closeModal();
+    loadArticles();
+    if (document.getElementById('screen-dashboard').classList.contains('active')) loadDashboard();
+  } catch(e) { showToast('Error: ' + e.message, 'error'); }
+}
+
+// ── TOAST ──
+function showToast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast${type ? ' '+type : ''} show`;
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ── UTILS ──
+function fmtDate(d) {
+  return new Date(d).toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'});
+}
+
+// ── INIT ──
+(async () => {
+  await populateSectionSelect();
+  loadDashboard();
+})();
+</script>
+</body>
+</html>
