@@ -424,6 +424,9 @@ tbody td { padding: 13px 20px; font-size: 13.5px; color: var(--ink); vertical-al
       <div class="nav-item" onclick="nav(this,'subscribers')">
         <span class="nav-icon">✉</span> Subscribers
       </div>
+      <div class="nav-item" onclick="nav(this,'settings')">
+        <span class="nav-icon">⚙</span> Site Settings
+      </div>
     </nav>
     <div class="sidebar-footer">The Orangerie · mmxxvi</div>
   </aside>
@@ -741,6 +744,28 @@ Another paragraph..."></textarea>
         </div>
       </div>
 
+      <!-- ══ SETTINGS ══ -->
+      <div id="screen-settings" class="screen">
+        <div class="form-card" style="max-width:640px">
+          <div class="form-card-title">Philosophy Quote</div>
+          <div class="form-body">
+            <div class="field">
+              <label>Quote Text</label>
+              <textarea id="s-quote-text" rows="3" placeholder="Elegance is not about being noticed..."></textarea>
+              <div class="field-hint">Displayed in the large centre section on the homepage. No quotation marks needed — they are added automatically.</div>
+            </div>
+            <div class="field">
+              <label>Attribution</label>
+              <input type="text" id="s-quote-author" placeholder="Giorgio Armani">
+              <div class="field-hint">Shown below the quote as "— Name"</div>
+            </div>
+            <div>
+              <button class="btn btn-success" onclick="saveSettings()">Save Changes</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div><!-- /main-scroll -->
   </main>
 </div>
@@ -799,12 +824,13 @@ function nav(el, screen) {
   if (el && el.classList) el.classList.add('active');
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(`screen-${screen}`).classList.add('active');
-  const titles = { dashboard:'Dashboard', articles:'All Articles', 'new-article': editingId ? 'Edit Article' : 'New Article', categories:'Categories', subscribers:'Subscribers' };
+  const titles = { dashboard:'Dashboard', articles:'All Articles', 'new-article': editingId ? 'Edit Article' : 'New Article', categories:'Categories', subscribers:'Subscribers', settings:'Site Settings' };
   document.getElementById('topbar-title').textContent = titles[screen] || screen;
   if (screen === 'dashboard')   loadDash();
   if (screen === 'articles')    loadArts();
   if (screen === 'categories')  loadCats();
   if (screen === 'subscribers') loadSubs();
+  if (screen === 'settings')    loadSettings();
 }
 
 // ── DASHBOARD ──
@@ -1106,7 +1132,28 @@ function exportCSV() {
   a.click(); toast('CSV exported.','success');
 }
 
-// ── DELETE ──
+// ── SETTINGS ──
+async function loadSettings() {
+  try {
+    const rows = await sb('orangerie_settings?select=*');
+    const map  = Object.fromEntries(rows.map(r => [r.key, r.value]));
+    document.getElementById('s-quote-text').value   = map['quote_text']   || '';
+    document.getElementById('s-quote-author').value = map['quote_author'] || '';
+  } catch(e) { toast('Error loading settings: '+e.message,'error'); }
+}
+
+async function saveSettings() {
+  const text   = document.getElementById('s-quote-text').value.trim();
+  const author = document.getElementById('s-quote-author').value.trim();
+  if (!text) { toast('Quote text cannot be empty.','error'); return; }
+  try {
+    await Promise.all([
+      sb('orangerie_settings?key=eq.quote_text',   { method:'PATCH', body:JSON.stringify({value:text})   }),
+      sb('orangerie_settings?key=eq.quote_author', { method:'PATCH', body:JSON.stringify({value:author}) })
+    ]);
+    toast('Settings saved.','success');
+  } catch(e) { toast('Save failed: '+e.message,'error'); }
+}
 function openDel(id) { delId=id; document.getElementById('del-modal').classList.add('open'); }
 function closeModal() { document.getElementById('del-modal').classList.remove('open'); delId=null; }
 async function confirmDelete() {
